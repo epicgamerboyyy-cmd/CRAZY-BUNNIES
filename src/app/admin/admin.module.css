@@ -304,27 +304,219 @@
   border-radius: 999px;
   background: var(--sand);
   font-size: var(--t-xs);
-  font-weight: 800;
+  font-weight: 700;
 }
 
-.staffFilter {
+/* Dashboard tabs */
+.tabs {
+  display: flex;
+  gap: var(--s1);
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-edge);
+}
+
+.tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 2.75rem;
+  padding: 0 var(--s4);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tabs a:hover {
+  background: rgb(255 255 255 / 0.7);
+}
+
+.tabs a[aria-current="page"] {
+  background: var(--berry);
+  color: #fff;
+}
+
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--sun);
+  color: var(--ink);
+  font-size: var(--t-xs);
+  font-weight: 700;
+}
+
+/* Feedback inbox */
+.filterRow {
+  display: grid;
+  gap: var(--s2);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.pills a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--s4);
+  border-radius: 999px;
+  border: 1.5px solid var(--control-border);
+  background: var(--field);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: var(--t-sm);
+  text-decoration: none;
+}
+
+.pills a:hover {
+  border-color: var(--ink);
+}
+
+.pills a[aria-current] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--cream);
+}
+
+.fbItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+  padding: var(--s4) var(--s5);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--control-border);
+  border-radius: var(--radius);
+}
+
+.kind_complaint {
+  border-left-color: var(--error);
+}
+
+.kind_improvement {
+  border-left-color: var(--sun);
+}
+
+.kind_compliment {
+  border-left-color: var(--mint-ink);
+}
+
+.fbHead {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s2) var(--s3);
+  font-size: var(--t-sm);
 }
 
-.staffFilter .input {
-  width: auto;
-  min-width: 14rem;
-  max-width: 100%;
-}
-
-.clientTag {
-  margin-left: var(--s2);
-  padding: 0 0.5rem;
+.kindTag,
+.fbStatus {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
   border-radius: 999px;
-  background: var(--sand);
   font-size: var(--t-xs);
-  font-weight: 800;
+  font-weight: 700;
+  border: 1px solid currentColor;
+}
+
+.kindTag_complaint {
+  color: var(--error);
+  background: var(--error-soft);
+}
+
+.kindTag_improvement {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.kindTag_compliment {
+  color: var(--mint-ink);
+  background: var(--mint-soft);
+}
+
+.fbStatus_new {
+  color: var(--berry);
+  background: var(--berry-soft);
+}
+
+.fbStatus_in_progress {
+  color: var(--warn);
+}
+
+.fbStatus_resolved {
+  color: var(--muted);
+}
+
+.fbRef {
+  margin-left: auto;
+  font-family: var(--font-display);
+  color: var(--muted);
+}
+
+.fbMessage {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--t-base);
+  max-width: 70ch;
+}
+
+.fbMeta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  font-size: var(--t-sm);
+}
+
+.fbMeta dt {
+  color: var(--muted);
+}
+
+.fbMeta dd {
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.fbMeta a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+}
+
+.fbActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.noteForm {
+  display: grid;
+  gap: var(--s1);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--rule);
+}
+
+.noteRow {
+  display: flex;
+  gap: var(--s2);
+}
+
+.noteRow .input {
+  flex: 1;
+}
+
+@media (max-width: 30rem) {
+  .noteRow {
+    flex-direction: column;
+  }
 }

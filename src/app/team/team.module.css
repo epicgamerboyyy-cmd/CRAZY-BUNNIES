@@ -1,6 +1,5 @@
 .head {
   padding-block: var(--s7) var(--s6);
-  background: radial-gradient(50rem 24rem at 90% 0%, var(--mint-soft), transparent 70%);
 }
 
 .head :global(.wrap) {
@@ -12,7 +11,8 @@
 .head h1 {
   font-size: var(--t-hero);
   color: var(--berry);
-  font-weight: 700;
+  font-weight: 520;
+  letter-spacing: -0.035em;
 }
 
 .lede {
@@ -48,7 +48,7 @@
   align-items: center;
   gap: var(--s2);
   min-height: 2.75rem;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: var(--s4);
 }
 
@@ -80,7 +80,8 @@
 
 .info h1 {
   font-size: var(--t-hero);
-  font-weight: 700;
+  font-weight: 520;
+  letter-spacing: -0.035em;
   color: var(--berry);
 }
 
@@ -103,7 +104,7 @@
 .days li {
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-sm);
   background: var(--mint-soft);
   color: var(--mint-ink);
@@ -151,7 +152,7 @@
   border: 1.5px solid var(--control-border);
   color: var(--ink);
   text-decoration: none;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .offerList a:hover {

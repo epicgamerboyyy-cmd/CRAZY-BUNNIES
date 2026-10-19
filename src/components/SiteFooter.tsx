@@ -79,6 +79,9 @@ export function SiteFooter() {
               </li>
             ))}
             <li>
+              <Link href="/feedback">Feedback &amp; complaints</Link>
+            </li>
+            <li>
               <Link href="/privacy">Privacy notice</Link>
             </li>
           </ul>

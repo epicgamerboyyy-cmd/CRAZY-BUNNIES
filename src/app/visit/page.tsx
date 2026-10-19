@@ -29,9 +29,12 @@ export default async function VisitPage() {
       </section>
       <div className="wrap">
         <VisitBlock now={nowMs()} />
-        <p style={{ marginTop: "var(--s6)" }}>
+        <p style={{ marginTop: "var(--s6)", display: "flex", flexWrap: "wrap", gap: "var(--s2)", maxWidth: "none" }}>
           <Link href="/book" className="btn btn-primary">
             Book an appointment <Icon name="arrow" size={18} />
+          </Link>
+          <Link href="/feedback" className="btn btn-secondary">
+            Feedback &amp; complaints
           </Link>
         </p>
       </div>

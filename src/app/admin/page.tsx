@@ -14,7 +14,9 @@ import {
 } from "@/lib/bookings";
 import { isCalendarConfigured } from "@/lib/gcal";
 import { addDays, isDateString, makeFormatters } from "@/lib/time";
-import { deleteBlock, logout, retryCalendarSync } from "./actions";
+import { countNewFeedback } from "@/lib/feedback";
+import { deleteBlock, retryCalendarSync } from "./actions";
+import { AdminNav } from "./AdminNav";
 import { BlockForm } from "./BlockForm";
 import { BookingActions } from "./BookingActions";
 import styles from "./admin.module.css";
@@ -34,13 +36,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   let data;
   try {
-    const [bookings, counts, blocks, unsynced] = await Promise.all([
+    const [bookings, counts, blocks, unsynced, newFeedback] = await Promise.all([
       listBookingsForDay(date, staffFilter),
       upcomingCounts(today, 7, staffFilter),
       listUpcomingBlocks(staffFilter),
       isCalendarConfigured() ? listUnsynced() : Promise.resolve([]),
+      countNewFeedback(),
     ]);
-    data = { bookings, counts, blocks, unsynced };
+    data = { bookings, counts, blocks, unsynced, newFeedback };
   } catch (err) {
     console.error("[admin]", err);
     return (
@@ -57,21 +60,15 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const { bookings, counts, blocks, unsynced } = data;
+  const { bookings, counts, blocks, unsynced, newFeedback } = data;
   const active = bookings.filter((b) => b.status !== "cancelled");
   const strip = Array.from({ length: 7 }, (_, i) => addDays(today, i));
   const failedSync = unsynced.filter((b) => b.gcalError);
 
   return (
     <div className={`wrap ${styles.page}`}>
-      <div className={styles.top}>
-        <h1>Bookings</h1>
-        <form action={logout}>
-          <button type="submit" className="btn btn-secondary btn-small">
-            Sign out
-          </button>
-        </form>
-      </div>
+      <AdminNav current="bookings" newFeedback={newFeedback} />
+      <h1>Bookings</h1>
 
       {business.isSample && (
         <div className="notice notice-warn" role="note">

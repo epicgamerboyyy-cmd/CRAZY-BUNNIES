@@ -8,20 +8,18 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 
-const fredoka = localFont({
-  src: "../../node_modules/@fontsource-variable/fredoka/files/fredoka-latin-wght-normal.woff2",
-  variable: "--font-fredoka",
-  weight: "300 700",
+const fraunces = localFont({
+  // Optical-size axis: big headlines automatically get the finer display cut.
+  src: "../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2",
+  variable: "--font-fraunces",
+  weight: "100 900",
   display: "swap",
 });
 
-const nunito = localFont({
-  src: [
-    { path: "../../node_modules/@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2", style: "normal" },
-    { path: "../../node_modules/@fontsource-variable/nunito/files/nunito-latin-wght-italic.woff2", style: "italic" },
-  ],
-  variable: "--font-nunito",
-  weight: "200 1000",
+const manrope = localFont({
+  src: "../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2",
+  variable: "--font-manrope",
+  weight: "200 800",
   display: "swap",
 });
 
@@ -57,7 +55,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-ZA" className={`${fredoka.variable} ${nunito.variable}`}>
+    <html lang="en-ZA" className={`${fraunces.variable} ${manrope.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

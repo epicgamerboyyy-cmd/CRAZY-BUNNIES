@@ -2,13 +2,15 @@
 .header {
   position: relative;
   z-index: 30;
-  background: color-mix(in srgb, var(--cream) 94%, transparent);
-  border-bottom: 1px solid var(--rule);
+  background: rgb(251 247 241 / 0.92);
+  border-bottom: 1px solid var(--glass-line);
 }
 
-@supports (backdrop-filter: blur(8px)) {
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
   .header {
-    backdrop-filter: saturate(1.3) blur(8px);
+    background: rgb(251 247 241 / 0.6);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
   }
 }
 
@@ -39,8 +41,9 @@
 
 .brandText {
   display: grid;
+  gap: 2px;
   min-width: 0;
-  line-height: 1.05;
+  line-height: 1.15;
   overflow-wrap: anywhere;
 }
 
@@ -48,13 +51,14 @@
   font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--t-md);
+  letter-spacing: -0.015em;
 }
 
 .brandSub {
-  font-size: var(--t-xs);
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .nav {
@@ -84,7 +88,7 @@
 }
 
 .navLink:hover {
-  background: var(--sand);
+  background: var(--glass-strong);
   text-decoration: none;
 }
 
@@ -107,9 +111,9 @@
   padding: 0 var(--s4);
   border: 1.5px solid var(--control-border);
   border-radius: 999px;
-  background: var(--card);
+  background: var(--glass-strong);
   color: var(--ink);
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -119,18 +123,24 @@
 
 .menuPanel {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-  background: var(--cream);
-  border-bottom: 1px solid var(--rule);
-  box-shadow: 0 24px 40px -20px rgb(42 22 34 / 0.35);
+  left: var(--s3);
+  right: var(--s3);
+  top: calc(100% + var(--s2));
+  border-radius: var(--radius-lg);
+  /* Nearly solid: a blur can't work inside the already-blurred header, and text behind a menu must never show through */
+  background: rgb(255 253 250 / 0.98);
+  border: 1px solid var(--glass-edge);
+  box-shadow: 0 24px 50px -20px rgb(92 19 56 / 0.45), 0 0 0 100vmax rgb(42 22 34 / 0.18);
+}
+
+.menuPanel li:last-child a {
+  border-bottom: 0;
 }
 
 .menuPanel ul {
   list-style: none;
   margin: 0;
-  padding: var(--s2) var(--gutter) var(--s5);
+  padding: var(--s2) var(--s5) var(--s3);
 }
 
 .menuPanel a {
@@ -142,8 +152,8 @@
   text-decoration: none;
   font-family: var(--font-display);
   font-size: var(--t-lg);
-  font-weight: 600;
-  border-bottom: 1px solid var(--rule);
+  font-weight: 500;
+  border-bottom: 1px solid var(--glass-line);
 }
 
 .menuPanel a[aria-current="page"] {
@@ -184,14 +194,16 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s2);
   padding: var(--s2) var(--s3) calc(var(--s2) + env(safe-area-inset-bottom, 0px));
-  background: color-mix(in srgb, var(--cream) 92%, transparent);
-  border-top: 1px solid var(--rule);
-  box-shadow: 0 -10px 30px -18px rgb(42 22 34 / 0.4);
+  background: rgb(251 247 241 / 0.92);
+  border-top: 1px solid var(--glass-edge);
+  box-shadow: 0 -12px 34px -18px rgb(92 19 56 / 0.4);
 }
 
-@supports (backdrop-filter: blur(8px)) {
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
   .actionBar {
-    backdrop-filter: saturate(1.3) blur(8px);
+    background: rgb(251 247 241 / 0.62);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
   }
 }
 

@@ -61,7 +61,7 @@ export default async function HomePage() {
               sizes="(min-width: 60rem) 30rem, 90vw"
               placeholderLabel="Salon photo coming soon"
             />
-            <Link href="/team" className={styles.pickCard}>
+            <Link href="/team" className={`glass ${styles.pickCard}`}>
               <span className={styles.faces} aria-hidden="true">
                 {faces.map((s) => (
                   <Portrait key={s.id} staff={s} sizes="3rem" className={styles.face} />
@@ -164,7 +164,7 @@ export default async function HomePage() {
           </div>
           <ul className={styles.highlights}>
             {business.highlights.map((h) => (
-              <li key={h.title}>
+              <li key={h.title} className="glass">
                 <span className={styles.hlIcon}>
                   <Icon name={h.icon} size={26} />
                 </span>
@@ -224,6 +224,28 @@ export default async function HomePage() {
             <p>You&apos;ll find us at Shop 20B in Celtis Ridge Shopping Centre, Centurion.</p>
           </div>
           <VisitBlock now={now} headingLevel={3} />
+        </div>
+      </section>
+
+      {/* Feedback */}
+      <section className="section-tight" aria-labelledby="listen-title">
+        <div className={`wrap`}>
+          <div className={`glass ${styles.listen}`}>
+            <div>
+              <h2 id="listen-title">Tell us how we&apos;re doing</h2>
+              <p className="muted">
+                Something not right, or an idea to make visits better? Send it straight to the owner. Anonymous is fine.
+              </p>
+            </div>
+            <div className={styles.listenBtns}>
+              <Link href="/feedback?type=complaint" className="btn btn-secondary">
+                Make a complaint
+              </Link>
+              <Link href="/feedback?type=improvement" className="btn btn-primary">
+                Suggest an improvement
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

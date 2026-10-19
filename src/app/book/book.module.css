@@ -27,7 +27,7 @@
 
 .title {
   font-size: var(--t-xl);
-  font-weight: 700;
+  font-weight: 520;
   color: var(--berry);
 }
 
@@ -36,10 +36,6 @@
   grid-template-columns: minmax(0, 1fr);
   gap: var(--s4);
   padding: var(--s5);
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
 }
 
 @media (max-width: 30rem) {
@@ -50,7 +46,9 @@
 
 .step[data-disabled] {
   box-shadow: none;
-  background: transparent;
+  background: rgb(255 255 255 / 0.25);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .step[data-disabled] .stepTitle {
@@ -122,8 +120,8 @@
   min-height: 3.25rem;
   border: 1.5px solid var(--control-border);
   border-radius: 999px;
-  background: var(--card);
-  font-weight: 800;
+  background: var(--field);
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -147,7 +145,7 @@
   padding: 0;
   min-height: 2.75rem;
   color: var(--berry);
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
 }
@@ -174,7 +172,7 @@
 }
 
 .staffOption:hover {
-  background: var(--sand);
+  background: rgb(255 255 255 / 0.6);
 }
 
 .staffOption:has(input:checked) {
@@ -210,7 +208,7 @@
 }
 
 .staffName {
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -236,7 +234,7 @@
   border-radius: 999px;
   border: 1.5px solid var(--control-border);
   background: var(--card);
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-sm);
   cursor: pointer;
 }
@@ -279,7 +277,7 @@
   font-family: var(--font-body);
   font-size: var(--t-sm);
   color: var(--berry);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .serviceList {
@@ -310,7 +308,7 @@
 }
 
 .serviceName {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .serviceMeta {
@@ -328,7 +326,7 @@
 }
 
 .weekLabel {
-  font-weight: 800;
+  font-weight: 700;
   order: -1;
   flex-basis: 100%;
 }
@@ -427,7 +425,7 @@
 }
 
 .timeGroupLabel {
-  font-weight: 800;
+  font-weight: 700;
   padding: 0;
   margin-bottom: var(--s2);
 }
@@ -444,7 +442,7 @@
   border-radius: 999px;
   background: var(--card);
   color: var(--mint-ink);
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
 }
@@ -495,10 +493,6 @@
 
 /* Summary */
 .summary {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
   padding: var(--s5);
   display: grid;
   gap: var(--s4);
@@ -553,5 +547,5 @@
 
 .summaryList dd {
   margin: 0;
-  font-weight: 800;
+  font-weight: 700;
 }

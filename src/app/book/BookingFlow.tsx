@@ -207,7 +207,7 @@ export function BookingFlow(props: Props) {
         </header>
 
         {/* 1. Who for */}
-        <section aria-labelledby="step-who" className={styles.step}>
+        <section aria-labelledby="step-who" className={`glass ${styles.step}`}>
           <h2 id="step-who" className={styles.stepTitle}>
             <span className={styles.stepNum} aria-hidden="true">1</span> Who is the appointment for?
           </h2>
@@ -224,7 +224,7 @@ export function BookingFlow(props: Props) {
         </section>
 
         {/* 2. Stylist */}
-        <section aria-labelledby="step-staff" className={styles.step}>
+        <section aria-labelledby="step-staff" className={`glass ${styles.step}`}>
           <h2 id="step-staff" className={styles.stepTitle}>
             <span className={styles.stepNum} aria-hidden="true">2</span> Choose your stylist
           </h2>
@@ -258,7 +258,7 @@ export function BookingFlow(props: Props) {
         </section>
 
         {/* 3. Service */}
-        <section aria-labelledby="step-service" className={styles.step} data-disabled={!staffId || undefined}>
+        <section aria-labelledby="step-service" className={`glass ${styles.step}`} data-disabled={!staffId || undefined}>
           <h2 id="step-service" ref={serviceRef} tabIndex={-1} className={styles.stepTitle}>
             <span className={styles.stepNum} aria-hidden="true">3</span> Service
           </h2>
@@ -315,7 +315,7 @@ export function BookingFlow(props: Props) {
         </section>
 
         {/* 4. Day and time */}
-        <section aria-labelledby="step-time" className={styles.step} data-disabled={!service || !staffId || undefined}>
+        <section aria-labelledby="step-time" className={`glass ${styles.step}`} data-disabled={!service || !staffId || undefined}>
           <h2 id="step-time" ref={timeRef} tabIndex={-1} className={styles.stepTitle}>
             <span className={styles.stepNum} aria-hidden="true">4</span> Day and time
           </h2>
@@ -424,7 +424,7 @@ export function BookingFlow(props: Props) {
         </section>
 
         {/* 5. Details */}
-        <section aria-labelledby="step-details" className={styles.step} data-disabled={!ready || undefined}>
+        <section aria-labelledby="step-details" className={`glass ${styles.step}`} data-disabled={!ready || undefined}>
           <h2 id="step-details" ref={detailsRef} tabIndex={-1} className={styles.stepTitle}>
             <span className={styles.stepNum} aria-hidden="true">5</span> Your details
           </h2>
@@ -541,7 +541,7 @@ export function BookingFlow(props: Props) {
         </section>
       </div>
 
-      <aside className={styles.summary} aria-label="Your booking so far">
+      <aside className={`glass ${styles.summary}`} aria-label="Your booking so far">
         <h2 className={styles.summaryTitle}>Your booking</h2>
         {member ? (
           <div className={styles.summaryStaff}>

@@ -27,7 +27,7 @@ export function SiteHeader() {
           <Link href="/book" className={`btn btn-primary btn-small ${styles.bookBtn}`}>
             Book now
           </Link>
-          <MobileMenu links={[...NAV_LINKS, { href: "/book", label: "Book an appointment" }]} />
+          <MobileMenu links={[...NAV_LINKS, { href: "/feedback", label: "Feedback" }, { href: "/book", label: "Book an appointment" }]} />
         </nav>
       </div>
     </header>

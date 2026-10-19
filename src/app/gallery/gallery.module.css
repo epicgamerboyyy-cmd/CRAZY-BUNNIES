@@ -1,6 +1,5 @@
 .head {
   padding-block: var(--s7) var(--s6);
-  background: radial-gradient(50rem 24rem at 90% 0%, var(--berry-soft), transparent 70%);
 }
 
 .head :global(.wrap) {
@@ -12,7 +11,8 @@
 .head h1 {
   font-size: var(--t-hero);
   color: var(--berry);
-  font-weight: 700;
+  font-weight: 520;
+  letter-spacing: -0.035em;
 }
 
 .lede {
@@ -32,7 +32,7 @@
   border-radius: 999px;
   border: 1.5px solid var(--control-border);
   background: var(--card);
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -103,7 +103,7 @@
   padding: var(--s4);
   border-radius: var(--radius-lg);
   color: var(--berry);
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-sm);
   text-align: center;
   background-image: radial-gradient(color-mix(in srgb, var(--berry) 14%, transparent) 1.2px, transparent 1.4px) !important;

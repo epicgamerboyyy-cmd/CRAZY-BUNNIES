@@ -60,7 +60,7 @@ export default async function ManageBookingPage({
         </div>
       )}
 
-      <section className={styles.ticket} aria-label="Booking details">
+      <section className={`glass ${styles.ticket}`} aria-label="Booking details">
         <div className={styles.when}>
           <p className={styles.date}>{fmt.dateLong(booking.startsAt)}</p>
           <p className={styles.time}>
@@ -139,6 +139,23 @@ export default async function ManageBookingPage({
         </section>
       )}
 
+      {past && !cancelled && (
+        <section className={`${styles.block} no-print`} aria-labelledby="how">
+          <h2 id="how" className={styles.blockTitle}>
+            How did it go?
+          </h2>
+          <p>We&apos;d love to hear what went well, and what we could do better.</p>
+          <div className={styles.actions}>
+            <Link className="btn btn-primary" href="/feedback?type=compliment">
+              Leave a compliment
+            </Link>
+            <Link className="btn btn-secondary" href="/feedback?type=complaint">
+              Tell us what went wrong
+            </Link>
+          </div>
+        </section>
+      )}
+
       {!cancelled && !past && (
         <section className={`${styles.block} no-print`} aria-labelledby="change">
           <h2 id="change" className={styles.blockTitle}>
@@ -169,6 +186,10 @@ export default async function ManageBookingPage({
           )}
         </section>
       )}
+
+      <p className={`muted no-print ${styles.feedbackLine}`}>
+        Something not right with your booking? <Link href="/feedback?type=complaint">Let us know</Link>.
+      </p>
     </div>
   );
 }

@@ -12,7 +12,8 @@
 
 .head h1 {
   font-size: var(--t-hero);
-  font-weight: 700;
+  font-weight: 520;
+  letter-spacing: -0.035em;
   color: var(--berry);
 }
 
@@ -41,10 +42,6 @@
 
 /* Ticket card with a perforated edge */
 .ticket {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
@@ -52,7 +49,9 @@
   display: grid;
   gap: var(--s1);
   padding: var(--s5);
-  background: var(--berry);
+  background:
+    radial-gradient(24rem 10rem at 100% 0%, rgb(255 143 176 / 0.35), transparent 70%),
+    var(--berry);
   color: var(--cream);
 }
 
@@ -79,7 +78,7 @@
   gap: var(--s4);
   align-items: center;
   padding: var(--s4) var(--s5);
-  background: var(--berry-soft);
+  background: rgb(247 230 238 / 0.6);
 }
 
 .with p {
@@ -118,7 +117,7 @@
 
 .details dd {
   margin: 0;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .ref {
@@ -161,4 +160,8 @@
     color: #000;
     border-bottom: 1px solid #000;
   }
+}
+
+.feedbackLine {
+  font-size: var(--t-sm);
 }

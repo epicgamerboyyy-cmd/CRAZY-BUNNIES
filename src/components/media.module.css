@@ -46,7 +46,7 @@
   gap: var(--s2);
   padding: var(--s4);
   color: var(--berry);
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-sm);
   text-align: center;
   background-image: radial-gradient(color-mix(in srgb, var(--berry) 14%, transparent) 1.2px, transparent 1.4px);

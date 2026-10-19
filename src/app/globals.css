@@ -1,7 +1,8 @@
 /*
  * Crazy Bunnies design system.
  * Brand colours come from the salon's existing site (berry + mint), tuned so every
- * text pair passes WCAG AA. Rounded type and arch frames echo the salon interior.
+ * text pair passes WCAG AA. Arch frames echo the salon interior. Surfaces are frosted
+ * glass over soft brand-coloured light, with solid fallbacks.
  */
 :root {
   --cream: #fbf7f1;
@@ -11,6 +12,21 @@
   --muted: #66545e;
   --rule: #ebe0d6;
   --control-border: #8f7d86;
+  --field: #fffdfa;
+
+  /* Glass */
+  --glass: rgb(255 255 255 / 0.58);
+  --glass-strong: rgb(255 255 255 / 0.76);
+  --glass-edge: rgb(255 255 255 / 0.75);
+  --glass-line: rgb(122 29 75 / 0.1);
+  --glass-blur: blur(18px) saturate(1.5);
+  --glass-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 12px 40px -16px rgb(92 19 56 / 0.28);
+
+  /* Older names still used by the dashboard styles */
+  --surface: var(--card);
+  --paper: var(--cream);
+  --action: var(--berry);
+  --rule-strong: #d9c9cf;
 
   --berry: #7a1d4b;
   --berry-deep: #5c1338;
@@ -35,12 +51,12 @@
   --error-soft: #fbe7e5;
   --focus: #7a1d4b;
 
-  --font-display: var(--font-fredoka), "Trebuchet MS", system-ui, sans-serif;
-  --font-body: var(--font-nunito), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-manrope), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --t-xs: 0.8125rem;
   --t-sm: 0.9375rem;
-  --t-base: 1.0625rem;
+  --t-base: 1.03125rem;
   --t-md: 1.25rem;
   --t-lg: 1.5625rem;
   --t-xl: clamp(1.9rem, 1.4rem + 2vw, 2.75rem);
@@ -56,9 +72,9 @@
   --s8: 5rem;
 
   --radius: 12px;
-  --radius-lg: 22px;
+  --radius-lg: 20px;
   --arch: 999px 999px var(--radius-lg) var(--radius-lg);
-  --shadow: 0 1px 2px rgb(42 22 34 / 0.06), 0 8px 24px -12px rgb(42 22 34 / 0.18);
+  --shadow: var(--glass-shadow);
 
   --measure: 64ch;
   --page: 74rem;
@@ -97,14 +113,31 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--t-base);
-  line-height: 1.6;
+  line-height: 1.65;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
   overflow-wrap: break-word;
   display: flex;
   flex-direction: column;
   overflow-x: clip;
   /* Room for the mobile action bar so it never covers the footer */
   padding-bottom: var(--actionbar-h);
+}
+
+/* Soft brand light behind everything, so the glass has something to frost */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38rem 32rem at 92% 6%, rgb(249 219 230 / 0.95), transparent 70%),
+    radial-gradient(34rem 30rem at 4% 38%, rgb(205 236 223 / 0.9), transparent 70%),
+    radial-gradient(30rem 26rem at 78% 78%, rgb(251 231 194 / 0.75), transparent 70%),
+    radial-gradient(28rem 24rem at 18% 96%, rgb(247 230 238 / 0.9), transparent 70%),
+    var(--cream);
 }
 
 main {
@@ -119,9 +152,10 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-weight: 560;
+  font-optical-sizing: auto;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   margin: 0;
   text-wrap: balance;
   hyphens: auto;
@@ -136,6 +170,7 @@ h2 {
 
 h3 {
   font-size: var(--t-md);
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -255,10 +290,18 @@ code {
 }
 
 .kicker {
-  font-family: var(--font-display);
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  justify-self: start;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
   color: var(--mint-ink);
-  font-size: var(--t-md);
+  font-weight: 700;
+  font-size: var(--t-sm);
+  letter-spacing: 0.01em;
 }
 
 /* Buttons */
@@ -271,7 +314,7 @@ code {
   padding: 0 var(--s5);
   border: 2px solid transparent;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
   text-align: center;
   /* Wrap rather than push the page sideways at large text sizes */
@@ -298,6 +341,7 @@ code {
 .btn-primary {
   background: var(--berry);
   color: #fff;
+  box-shadow: 0 8px 20px -10px rgb(122 29 75 / 0.7);
 }
 
 .btn-primary:hover {
@@ -323,7 +367,7 @@ code {
 }
 
 .btn-secondary {
-  background: transparent;
+  background: var(--glass);
   border-color: var(--ink);
   color: var(--ink);
 }
@@ -404,15 +448,35 @@ code {
   border-radius: 999px;
   background: var(--blush);
   color: var(--berry);
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-sm);
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--rule);
+/* Frosted glass panel. Falls back to near-solid white where blur isn't supported. */
+.card,
+.glass {
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-edge);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: var(--glass-shadow);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .card,
+  .glass {
+    background: var(--glass);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card,
+  .glass {
+    background: var(--card) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
 }
 
 .arch {
@@ -456,7 +520,7 @@ code {
 
 .field label,
 .label {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .field .hint {
@@ -471,7 +535,7 @@ code {
   padding: var(--s2) var(--s4);
   border: 1.5px solid var(--control-border);
   border-radius: var(--radius);
-  background: var(--card);
+  background: var(--field);
 }
 
 .input:hover {
@@ -495,7 +559,7 @@ textarea.input {
 .field-error {
   color: var(--error);
   font-size: var(--t-sm);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 /* Status tag: always has text, colour is a secondary cue */
@@ -504,7 +568,7 @@ textarea.input {
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
   font-size: var(--t-xs);
-  font-weight: 800;
+  font-weight: 700;
   border: 1px solid currentColor;
 }
 

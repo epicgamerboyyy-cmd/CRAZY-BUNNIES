@@ -1,4 +1,4 @@
-import { index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const BOOKING_STATUSES = ["confirmed", "completed", "no_show", "cancelled"] as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
@@ -52,6 +52,35 @@ export const authAttempts = pgTable("auth_attempts", {
   at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const FEEDBACK_KINDS = ["complaint", "improvement", "compliment"] as const;
+export type FeedbackKind = (typeof FEEDBACK_KINDS)[number];
+export const FEEDBACK_STATUSES = ["new", "in_progress", "resolved"] as const;
+export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
+
+export const feedback = pgTable(
+  "feedback",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ref: text("ref").notNull().unique(),
+    kind: text("kind").$type<FeedbackKind>().notNull(),
+    message: text("message").notNull(),
+    visitDate: date("visit_date"),
+    staffId: text("staff_id"),
+    serviceId: text("service_id"),
+    name: text("name"),
+    contact: text("contact"),
+    wantsReply: boolean("wants_reply").notNull().default(false),
+    status: text("status").$type<FeedbackStatus>().notNull().default("new"),
+    ownerNote: text("owner_note"),
+    /** Salted hash of the sender's IP, only for rate limiting. */
+    senderHash: text("sender_hash").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("feedback_created_idx").on(t.createdAt)],
+);
+
+export type Feedback = typeof feedback.$inferSelect;
 export type Booking = typeof bookings.$inferSelect;
 export type Block = typeof blocks.$inferSelect;
 
@@ -112,4 +141,23 @@ export const SCHEMA_SQL = [
     at timestamptz NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS auth_attempts_key_at_idx ON auth_attempts (key, at)`,
+  `CREATE TABLE IF NOT EXISTS feedback (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    ref text NOT NULL UNIQUE,
+    kind text NOT NULL CHECK (kind IN ('complaint','improvement','compliment')),
+    message text NOT NULL,
+    visit_date date,
+    staff_id text,
+    service_id text,
+    name text,
+    contact text,
+    wants_reply boolean NOT NULL DEFAULT false,
+    status text NOT NULL DEFAULT 'new' CHECK (status IN ('new','in_progress','resolved')),
+    owner_note text,
+    sender_hash text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+  )`,
+  `CREATE INDEX IF NOT EXISTS feedback_created_idx ON feedback (created_at)`,
+  `CREATE INDEX IF NOT EXISTS feedback_sender_idx ON feedback (sender_hash, created_at)`,
 ];

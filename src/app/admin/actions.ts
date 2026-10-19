@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { business, getStaff } from "@/config/business";
-import { BOOKING_STATUSES, type BookingStatus } from "@/db/schema";
+import { BOOKING_STATUSES, FEEDBACK_STATUSES, type BookingStatus, type FeedbackStatus } from "@/db/schema";
+import { updateFeedback } from "@/lib/feedback";
 import {
   adminConfigError,
   clearFailedLogins,
@@ -117,4 +118,20 @@ export async function deleteBlock(formData: FormData): Promise<void> {
   await requireAdmin();
   await removeBlock(String(formData.get("id") ?? ""));
   revalidatePath("/admin");
+}
+
+export async function setFeedbackStatus(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const status = String(formData.get("status") ?? "") as FeedbackStatus;
+  if (!FEEDBACK_STATUSES.includes(status)) return;
+  await updateFeedback(String(formData.get("id") ?? ""), { status });
+  revalidatePath("/admin/feedback");
+  revalidatePath("/admin");
+}
+
+export async function saveFeedbackNote(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const note = String(formData.get("note") ?? "").trim().slice(0, 1000) || null;
+  await updateFeedback(String(formData.get("id") ?? ""), { ownerNote: note });
+  revalidatePath("/admin/feedback");
 }

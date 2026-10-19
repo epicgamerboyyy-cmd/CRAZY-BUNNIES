@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...business.staff.map((s) => ({ url: `${base}/team/${s.id}`, changeFrequency: "monthly" as const, priority: 0.6 })),
     { url: `${base}/gallery`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${base}/visit`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/feedback`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.2 },
   ];
 }

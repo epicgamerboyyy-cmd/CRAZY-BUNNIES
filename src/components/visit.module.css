@@ -25,7 +25,7 @@
   justify-self: start;
   padding: 0.35rem 0.9rem;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-sm);
 }
 
@@ -123,7 +123,7 @@
 
 .today th,
 .today td {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .todayTag {
