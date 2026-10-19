@@ -1,194 +1,246 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { business, type Weekday } from "@/config/business";
-import { getAvailability, todayLocal } from "@/lib/bookings";
-import { whatsappLink } from "@/lib/contact";
+import { business, servicesIn } from "@/config/business";
+import { instagramUrl, telLink } from "@/lib/contact";
 import { formatZar } from "@/lib/money";
-import { formatDuration, localDate, makeFormatters, weekdayOf } from "@/lib/time";
+import { openStatus } from "@/lib/hours";
+import { nowMs } from "@/lib/time";
+import { Icon } from "@/components/Icon";
+import { PhotoFrame } from "@/components/PhotoFrame";
+import { Portrait } from "@/components/Portrait";
+import { StaffCard } from "@/components/StaffCard";
+import { VisitBlock } from "@/components/VisitBlock";
 import styles from "./home.module.css";
 
-const fmt = makeFormatters(business.locale, business.timezone);
-const DAY_NAMES: Record<Weekday, string> = {
-  mon: "Monday",
-  tue: "Tuesday",
-  wed: "Wednesday",
-  thu: "Thursday",
-  fri: "Friday",
-  sat: "Saturday",
-  sun: "Sunday",
-};
-const ORDER: Weekday[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-
-async function nextOpenTimes(serviceId: string, limit: number): Promise<string[] | null> {
-  try {
-    const days = await getAvailability(serviceId, todayLocal(), 14);
-    return days.flatMap((d) => d.slots).slice(0, limit);
-  } catch (err) {
-    console.error("[home] availability", err);
-    return null;
-  }
-}
-
 export default async function HomePage() {
-  // Open times change constantly, so this page is rendered per request.
+  // "Open now" depends on the current time, so render per request.
   await connection();
-  const firstService = business.services[0];
-  const times = firstService ? await nextOpenTimes(firstService.id, 6) : null;
-  const today = todayLocal();
-  const todayKey = weekdayOf(today);
-  const { phone, whatsapp, email } = business.contact;
-  const hasVisitInfo = !!(business.address || phone || whatsapp || email);
+  const now = nowMs();
+  const status = openStatus(business.hours, business.closedDates, now, business.timezone);
+  const faces = business.staff.slice(0, 4);
+  const galleryPreview = business.gallery.slice(0, 6);
 
   return (
     <>
+      {/* Hero */}
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={`wrap ${styles.heroGrid}`}>
           <div className={styles.heroText}>
+            <p className={styles.heroKicker}>
+              <Icon name="sparkle" size={20} /> Hair &amp; beauty in Centurion
+            </p>
             <h1 id="hero-title" className={styles.heroTitle}>
-              {business.name}
+              {business.headline.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
             </h1>
-            <p className={styles.lede}>{business.summary}</p>
+            <p className={styles.lede}>{business.intro}</p>
             <div className={styles.heroActions}>
               <Link href="/book" className="btn btn-primary">
-                Book an appointment
+                Book an appointment <Icon name="arrow" size={18} />
               </Link>
-              <Link href="#services" className="btn btn-secondary">
-                See services
-              </Link>
+              <a href={telLink(business.contact.phone)} className="btn btn-sun">
+                <Icon name="phone" size={18} /> Call {business.contact.phone}
+              </a>
             </div>
+            <p className={`${styles.statusLine} ${status.open ? styles.isOpen : ""}`}>
+              <span className={styles.dot} aria-hidden="true" />
+              {status.text}
+              <span className={styles.sep} aria-hidden="true" />
+              <Link href="/visit">{business.address.lines[0]}</Link>
+            </p>
           </div>
 
-          {firstService && (
-            <div className={styles.board} aria-labelledby="next-title">
-              <h2 id="next-title" className={styles.boardTitle}>
-                Next open times
-              </h2>
-              <p className={styles.boardSub}>
-                {firstService.name}, {formatDuration(firstService.durationMinutes)}
-              </p>
-              {times === null ? (
-                <p className={styles.boardEmpty}>Open times will show here once online booking is switched on.</p>
-              ) : times.length === 0 ? (
-                <p className={styles.boardEmpty}>Nothing open in the next two weeks. Check the booking page for later dates.</p>
-              ) : (
-                <ul className={styles.boardList}>
-                  {times.map((t) => {
-                    const d = localDate(Date.parse(t), business.timezone);
-                    return (
-                      <li key={t}>
-                        <Link href={`/book?service=${firstService.id}&slot=${encodeURIComponent(t)}`} className={styles.boardSlot}>
-                          <span>{d === today ? "Today" : fmt.calShortDay(d) + " " + fmt.calDayNum(d) + " " + fmt.calMonth(d)}</span>
-                          <strong>{fmt.time(new Date(t))}</strong>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-              <Link href="/book" className={styles.boardMore}>
-                All services and times
-              </Link>
-            </div>
-          )}
+          <div className={styles.heroArt}>
+            <PhotoFrame
+              photo={business.heroPhoto}
+              shape="arch"
+              ratio="4 / 5"
+              tint={1}
+              priority
+              sizes="(min-width: 60rem) 30rem, 90vw"
+              placeholderLabel="Salon photo coming soon"
+            />
+            <Link href="/team" className={styles.pickCard}>
+              <span className={styles.faces} aria-hidden="true">
+                {faces.map((s) => (
+                  <Portrait key={s.id} staff={s} sizes="3rem" className={styles.face} />
+                ))}
+              </span>
+              <span>
+                <strong>Choose your stylist</strong>
+                <span className={styles.pickSub}>{business.staff.length} people ready to help</span>
+              </span>
+              <Icon name="arrow" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section id="services" className={`wrap ${styles.section}`} aria-labelledby="services-title">
-        <h2 id="services-title">Services</h2>
-        <ul className={styles.services}>
-          {business.services.map((s) => (
-            <li key={s.id} className={styles.service}>
-              <div className={styles.serviceMain}>
-                <h3>{s.name}</h3>
-                <p className="muted">{s.description}</p>
-              </div>
-              <p className={styles.serviceMeta}>
-                <span>{formatDuration(s.durationMinutes)}</span>
-                {s.priceZar !== null && <span className={styles.price}>{formatZar(s.priceZar, business.locale)}</span>}
-              </p>
-              <Link href={`/book?service=${s.id}`} className="btn btn-secondary btn-small">
-                Book<span className="sr-only"> {s.name}</span>
+      {/* What we do, at a glance */}
+      <section className={styles.strip} aria-label="What we do">
+        <ul className={`wrap ${styles.stripList}`}>
+          {business.categories.map((c) => (
+            <li key={c.id}>
+              <Link href={`/services#${c.id}`}>
+                <Icon name={c.icon} size={20} />
+                {c.name}
               </Link>
             </li>
           ))}
         </ul>
       </section>
 
-      <section className={`wrap ${styles.section}`} aria-labelledby="how-title">
-        <h2 id="how-title">How booking works</h2>
-        <ol className={styles.steps}>
-          <li>
-            <h3>Pick a service and a time</h3>
-            <p className="muted">Only times that are actually free are shown.</p>
-          </li>
-          <li>
-            <h3>Leave your name and number</h3>
-            <p className="muted">No account, no card details. You get a link to manage the booking.</p>
-          </li>
-          <li>
-            <h3>Arrive and pay in person</h3>
-            <p className="muted">
-              Plans change? Cancel online up to {Math.round(business.booking.cancelCutoffMinutes / 60)} hours before.
-            </p>
-          </li>
-        </ol>
+      {/* Services */}
+      <section className="section" aria-labelledby="services-title">
+        <div className="wrap">
+          <div className={`section-head ${styles.headRow}`}>
+            <div>
+              <h2 id="services-title">One salon. Every kind of style.</h2>
+              <p>Prices are starting prices. The final price depends on hair length and style, so ask us for a quick quote.</p>
+            </div>
+            <Link href="/services" className="btn btn-secondary btn-small">
+              Full menu
+            </Link>
+          </div>
+          <ul className={styles.services}>
+            {business.categories.map((c) => (
+              <li key={c.id} className={`card ${styles.service}`}>
+                <div className={styles.serviceTop}>
+                  <span className={styles.serviceIcon}>
+                    <Icon name={c.icon} size={26} />
+                  </span>
+                  {c.fromZar !== null && <span className="price-tag">From {formatZar(c.fromZar)}</span>}
+                </div>
+                <h3>{c.name}</h3>
+                <p className="muted">{c.blurb}</p>
+                <ul className="chips" aria-label={`${c.name} includes`}>
+                  {servicesIn(c.id).map((s) => (
+                    <li key={s.id} className="chip">
+                      {s.name}
+                    </li>
+                  ))}
+                </ul>
+                <Link href={`/book?category=${c.id}`} className={styles.serviceLink}>
+                  Book {c.name.toLowerCase()} <Icon name="arrow" size={18} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
-      <section id="hours" className={`wrap ${styles.section} ${styles.split}`} aria-labelledby="hours-title">
-        <div>
-          <h2 id="hours-title">Opening hours</h2>
-          <table className={styles.hours}>
-            <caption className="sr-only">Opening hours by day</caption>
-            <tbody>
-              {ORDER.map((day) => {
-                const windows = business.hours[day];
-                const isToday = day === todayKey;
-                return (
-                  <tr key={day} aria-current={isToday ? "date" : undefined} className={isToday ? styles.today : undefined}>
-                    <th scope="row">
-                      {DAY_NAMES[day]}
-                      {isToday && <span className={styles.todayTag}> today</span>}
-                    </th>
-                    <td>{windows.length ? windows.map(([o, c]) => `${o} to ${c}`).join(", ") : "Closed"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {hasVisitInfo && (
-          <div aria-labelledby="visit-title">
-            <h2 id="visit-title">Find us</h2>
-            <address className={styles.address}>
-              {business.address?.lines.map((l) => (
-                <span key={l}>{l}</span>
-              ))}
-            </address>
-            <ul className={styles.contact}>
-              {business.address?.mapUrl && (
-                <li>
-                  <a href={business.address.mapUrl}>Open in maps</a>
-                </li>
-              )}
-              {phone && (
-                <li>
-                  <a href={`tel:${phone.replace(/\s/g, "")}`}>Call {phone}</a>
-                </li>
-              )}
-              {whatsapp && (
-                <li>
-                  <a href={whatsappLink(whatsapp)}>WhatsApp us</a>
-                </li>
-              )}
-              {email && (
-                <li>
-                  <a href={`mailto:${email}`}>{email}</a>
-                </li>
-              )}
-            </ul>
+      {/* Team */}
+      <section className={`section ${styles.teamSection}`} aria-labelledby="team-title">
+        <div className="wrap">
+          <div className={`section-head ${styles.headRow}`}>
+            <div>
+              <h2 id="team-title">Book the stylist you love</h2>
+              <p>Tap a face to see what they do best and book them directly. No preference? Book with whoever&apos;s free.</p>
+            </div>
+            <Link href="/book" className="btn btn-primary btn-small">
+              Anyone available
+            </Link>
           </div>
-        )}
+          <ul className={styles.team}>
+            {business.staff.map((s) => (
+              <li key={s.id}>
+                <StaffCard staff={s} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className="section" aria-labelledby="about-title">
+        <div className={`wrap ${styles.about}`}>
+          <div className={styles.aboutText}>
+            <p className="kicker">Professional care. Playful spirit.</p>
+            <h2 id="about-title">A salon made for families</h2>
+            {business.about.map((p) => (
+              <p key={p.slice(0, 20)}>{p}</p>
+            ))}
+          </div>
+          <ul className={styles.highlights}>
+            {business.highlights.map((h) => (
+              <li key={h.title}>
+                <span className={styles.hlIcon}>
+                  <Icon name={h.icon} size={26} />
+                </span>
+                <div>
+                  <h3>{h.title}</h3>
+                  <p className="muted">{h.body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Gallery preview */}
+      <section className={`section ${styles.gallerySection}`} aria-labelledby="gallery-title">
+        <div className="wrap">
+          <div className={`section-head ${styles.headRow}`}>
+            <div>
+              <h2 id="gallery-title">Happy hair days</h2>
+              <p>
+                A peek at the work that comes out of our chairs.
+                {business.contact.instagram && <> Tag @{business.contact.instagram} to be featured.</>}
+              </p>
+            </div>
+            <Link href="/gallery" className="btn btn-secondary btn-small">
+              See the gallery
+            </Link>
+          </div>
+          <ul className={styles.galleryGrid}>
+            {(galleryPreview.length ? galleryPreview : Array.from({ length: 6 }, () => null)).map((g, i) => (
+              <li key={g?.src ?? i}>
+                <PhotoFrame
+                  photo={g}
+                  ratio={i % 3 === 1 ? "4 / 5" : "1 / 1"}
+                  tint={((i % 4) + 1) as 1 | 2 | 3 | 4}
+                  sizes="(min-width: 60rem) 22rem, 45vw"
+                  placeholderIcon={business.categories[i % business.categories.length]!.icon}
+                />
+              </li>
+            ))}
+          </ul>
+          {business.contact.instagram && (
+            <p className={styles.insta}>
+              <a href={instagramUrl(business.contact.instagram)} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                <Icon name="instagram" size={18} /> Follow @{business.contact.instagram}
+              </a>
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* Visit */}
+      <section className="section" aria-labelledby="visit-title">
+        <div className="wrap">
+          <div className="section-head">
+            <h2 id="visit-title">Come and visit</h2>
+            <p>You&apos;ll find us at Shop 20B in Celtis Ridge Shopping Centre, Centurion.</p>
+          </div>
+          <VisitBlock now={now} headingLevel={3} />
+        </div>
+      </section>
+
+      {/* Closing call to action */}
+      <section className={styles.cta} aria-labelledby="cta-title">
+        <div className={`wrap ${styles.ctaInner}`}>
+          <h2 id="cta-title">Ready for a fresh salon day?</h2>
+          <p>Pick a time that suits you and the person you want. It takes about a minute.</p>
+          <div className={styles.heroActions}>
+            <Link href="/book" className="btn btn-mint">
+              Book an appointment <Icon name="arrow" size={18} />
+            </Link>
+            <a href={telLink(business.contact.phone)} className="btn btn-light">
+              <Icon name="phone" size={18} /> {business.contact.phone}
+            </a>
+          </div>
+        </div>
       </section>
     </>
   );

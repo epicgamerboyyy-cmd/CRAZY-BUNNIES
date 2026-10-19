@@ -20,7 +20,8 @@ function config() {
     email,
     key: key.replace(/\\n/g, "\n"),
     calendarId,
-    blocksAvailability: process.env.GOOGLE_CALENDAR_BLOCKS_AVAILABILITY !== "false",
+    // Opt-in: busy time in this one calendar blocks the whole team.
+    blocksAvailability: process.env.GOOGLE_CALENDAR_BLOCKS_AVAILABILITY === "true",
   };
 }
 

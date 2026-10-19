@@ -25,11 +25,12 @@ async function connect(): Promise<Db> {
     throw new DatabaseNotConfiguredError();
   } else {
     const { PGlite } = await import("@electric-sql/pglite");
+    const { btree_gist } = await import("@electric-sql/pglite/contrib/btree_gist");
     const { drizzle } = await import("drizzle-orm/pglite");
     const dir = process.env.PGLITE_DIR ?? ".data/pglite";
     (await import("node:fs")).mkdirSync(dir, { recursive: true });
     // Same query API as the neon driver for everything this app uses.
-    db = drizzle(new PGlite(dir), { schema }) as unknown as Db;
+    db = drizzle(new PGlite(dir, { extensions: { btree_gist } }), { schema }) as unknown as Db;
   }
   for (const statement of schema.SCHEMA_SQL) await db.execute(sql.raw(statement));
   return db;

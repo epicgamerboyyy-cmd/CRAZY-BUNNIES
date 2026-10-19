@@ -1,105 +1,233 @@
 /**
- * Everything business-specific lives here. Replace the sample values with the
- * real details, then set `isSample` to false to remove the sample-data notice.
+ * Everything business-specific lives here.
  *
- * Do not add anything you can't stand behind: no made-up reviews, prices or claims.
+ * Source: the salon's existing website (shared by the owner). Items marked
+ * CONFIRM still need checking with the owner before launch. Staff are sample
+ * profiles until real names and photos are added. Set `isSample` to false once
+ * the staff, hours and photos are real.
+ *
+ * Photos: put files in /public/photos (hero, gallery) and /public/team (staff),
+ * then reference them by path. See README > Photos.
+ *
+ * Do not add anything you can't stand behind: no made-up reviews, ratings or claims.
  */
 
 export type Weekday = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 /** Opening windows as local "HH:MM" pairs. An empty array means closed. */
 export type OpeningHours = Record<Weekday, Array<[open: string, close: string]>>;
 
+export type IconName = "braids" | "scissors" | "bunny" | "nails" | "makeup" | "lashes" | "leaf";
+
+export interface Category {
+  id: string;
+  name: string;
+  icon: IconName;
+  /** One line shown on cards. */
+  blurb: string;
+  /** "From" price in rand, as shown on the menu. null hides it. */
+  fromZar: number | null;
+}
+
 export interface Service {
   /** Stable id used in URLs and stored on bookings. Don't change it once live. */
   id: string;
+  categoryId: string;
   name: string;
-  description: string;
+  /** CONFIRM: estimates. Booking slots are sized from this, so get real times from the stylists. */
   durationMinutes: number;
-  /** In rand. null hides the price. */
+  /** In rand, if this item has its own price. Otherwise the category "from" price shows. */
   priceZar: number | null;
 }
 
-export interface BusinessConfig {
-  isSample: boolean;
+export interface StaffMember {
+  /** Stable id used in URLs and stored on bookings. Don't change it once live. */
+  id: string;
   name: string;
-  /** One plain sentence about what the business does, shown under the name. */
-  summary: string;
-  timezone: string;
-  locale: string;
-  contact: {
-    phone: string | null;
-    /** International format without +, e.g. 27821234567 */
-    whatsapp: string | null;
-    email: string | null;
-  };
-  address: { lines: string[]; mapUrl: string | null } | null;
-  hours: OpeningHours;
-  /** Specific dates the business is closed, as YYYY-MM-DD. */
-  closedDates: string[];
-  booking: {
-    /** Gap between possible start times. */
-    slotStepMinutes: number;
-    /** Kept free before and after every appointment. */
-    bufferMinutes: number;
-    /** How soon a customer can book from now. */
-    minNoticeMinutes: number;
-    maxDaysAhead: number;
-    /** Customers can cancel online until this long before the start. */
-    cancelCutoffMinutes: number;
-  };
-  services: Service[];
+  role: string;
+  categoryIds: string[];
+  /** Limit to specific services. Omit to allow every service in their categories. */
+  serviceIds?: string[];
+  /** Path under /public, e.g. "/team/lerato.jpg". null shows initials instead. */
+  photo: string | null;
+  bio: string;
+  /** Their own days/hours, inside the salon's hours. Omit to work all opening hours. */
+  hours?: Partial<OpeningHours>;
 }
 
-export const business: BusinessConfig = {
+export interface Photo {
+  /** Path under /public */
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+export interface GalleryItem extends Photo {
+  categoryId: string;
+  staffId?: string;
+}
+
+export interface Highlight {
+  icon: IconName;
+  title: string;
+  body: string;
+}
+
+export const business = {
   isSample: true,
-  name: "Crazy Bunnies 2",
-  summary: "Book your appointment online in under a minute. Pay in person when you arrive.",
+  name: "Crazy Bunnies",
+  descriptor: "Family Salon",
+  headline: ["Great hair.", "Every generation."],
+  intro:
+    "A modern family salon where children feel at ease and adults leave polished. Braids, cuts, nails, makeup, lashes and installations, all under one roof.",
+  about: [
+    "Crazy Bunnies is a Centurion-based salon created for the whole family. We believe every appointment should feel calm, thoughtful and enjoyable. Our Bunnies organic products are gentle enough for young clients while delivering polished care for adults too.",
+    "From first haircuts to birthday glam, our stylists make the chair a happy place. We specialise in plaiting, haircuts, nails, makeup, lashes and installations, so it's all under one playful roof.",
+  ],
+  highlights: [
+    { icon: "leaf", title: "Organic first", body: "We use our own Bunnies organic products: gentle, nourishing and made for kids' hair." },
+    { icon: "bunny", title: "Caring stylists", body: "Patient, experienced stylists who make every visit a happy one." },
+    { icon: "makeup", title: "Playful space", body: "A bright, fun salon that puts kids at ease from the moment they walk in." },
+  ] as Highlight[],
   timezone: "Africa/Johannesburg",
   locale: "en-ZA",
-  contact: { phone: null, whatsapp: null, email: null },
-  address: null,
+  contact: {
+    phone: "083 440 0484",
+    /** CONFIRM: assumed to be the same number as the phone line. */
+    whatsapp: "27834400484",
+    email: null as string | null,
+    instagram: "crazybunniessalon",
+    /** CONFIRM: add the Facebook page URL. */
+    facebook: null as string | null,
+  },
+  address: {
+    lines: ["Shop 20B, Celtis Ridge Shopping Centre", "Centurion, 0157", "Gauteng, South Africa"],
+    mapQuery: "Celtis Ridge Shopping Centre, Centurion",
+  },
+  /** CONFIRM: the old site labelled these as a placeholder schedule. */
   hours: {
-    mon: [["09:00", "17:00"]],
+    mon: [],
     tue: [["09:00", "17:00"]],
     wed: [["09:00", "17:00"]],
     thu: [["09:00", "17:00"]],
     fri: [["09:00", "17:00"]],
-    sat: [["09:00", "13:00"]],
+    sat: [["09:00", "15:00"]],
     sun: [],
-  },
-  closedDates: [],
+  } as OpeningHours,
+  closedDates: [] as string[],
   booking: {
     slotStepMinutes: 15,
     bufferMinutes: 10,
     minNoticeMinutes: 120,
-    maxDaysAhead: 30,
+    maxDaysAhead: 45,
     cancelCutoffMinutes: 12 * 60,
   },
+  /** Shown big on the homepage. Add a real salon photo here (e.g. the reception or a happy client). */
+  heroPhoto: null as Photo | null,
+  categories: [
+    { id: "braids", name: "Plaiting & braids", icon: "braids", blurb: "Neat protective styles, modern braids and polished finishes for every age.", fromZar: 150 },
+    { id: "cuts", name: "Haircuts", icon: "scissors", blurb: "Fresh cuts, trims and styling for children, women and men.", fromZar: 60 },
+    { id: "kiddies", name: "Kiddies styles", icon: "bunny", blurb: "Fun, cute styles and packages designed for our littlest clients.", fromZar: 90 },
+    { id: "nails", name: "Nails", icon: "nails", blurb: "Classic colour and playful nail art for kids and adults.", fromZar: 50 },
+    { id: "makeup", name: "Makeup", icon: "makeup", blurb: "Polished makeup for birthdays, events and special days.", fromZar: 80 },
+    { id: "lashes", name: "Lashes & installs", icon: "lashes", blurb: "Careful lash, wig and extension installations tailored to you.", fromZar: 120 },
+    { id: "treatments", name: "Organic treatments", icon: "leaf", blurb: "Hair treatments using our own Bunnies organic products.", fromZar: 100 },
+  ] as Category[],
   services: [
-    {
-      id: "sample-short",
-      name: "Sample: short appointment",
-      description: "Placeholder service. Replace with a real service name and description.",
-      durationMinutes: 30,
-      priceZar: null,
-    },
-    {
-      id: "sample-standard",
-      name: "Sample: standard appointment",
-      description: "Placeholder service. Replace with a real service name and description.",
-      durationMinutes: 60,
-      priceZar: null,
-    },
-    {
-      id: "sample-long",
-      name: "Sample: long appointment",
-      description: "Placeholder service. Replace with a real service name and description.",
-      durationMinutes: 90,
-      priceZar: null,
-    },
-  ],
+    { id: "cornrows", categoryId: "braids", name: "Cornrows", durationMinutes: 90, priceZar: null },
+    { id: "box-braids", categoryId: "braids", name: "Box braids", durationMinutes: 240, priceZar: null },
+    { id: "kiddies-braids", categoryId: "braids", name: "Kiddies braids", durationMinutes: 120, priceZar: null },
+    { id: "goddess-braids", categoryId: "braids", name: "Goddess braids", durationMinutes: 240, priceZar: null },
+    { id: "boys-cut", categoryId: "cuts", name: "Boys cut & line-up", durationMinutes: 30, priceZar: null },
+    { id: "girls-trim", categoryId: "cuts", name: "Girls trim", durationMinutes: 30, priceZar: null },
+    { id: "first-haircut", categoryId: "cuts", name: "First haircut", durationMinutes: 30, priceZar: null },
+    { id: "edge-up", categoryId: "cuts", name: "Edge-up", durationMinutes: 15, priceZar: null },
+    { id: "beads-bobbles", categoryId: "kiddies", name: "Beads & bobbles", durationMinutes: 60, priceZar: null },
+    { id: "bun-styles", categoryId: "kiddies", name: "Bun styles", durationMinutes: 45, priceZar: null },
+    { id: "party-package", categoryId: "kiddies", name: "Party package", durationMinutes: 90, priceZar: null },
+    { id: "wash-style", categoryId: "kiddies", name: "Wash & style", durationMinutes: 45, priceZar: null },
+    { id: "kids-manicure", categoryId: "nails", name: "Kids manicure", durationMinutes: 30, priceZar: null },
+    { id: "nail-art", categoryId: "nails", name: "Nail art", durationMinutes: 45, priceZar: null },
+    { id: "paint-glitter", categoryId: "nails", name: "Paint & glitter", durationMinutes: 20, priceZar: null },
+    { id: "toes", categoryId: "nails", name: "Toes", durationMinutes: 30, priceZar: null },
+    { id: "birthday-glam", categoryId: "makeup", name: "Birthday glam", durationMinutes: 45, priceZar: null },
+    { id: "face-sparkle", categoryId: "makeup", name: "Face sparkle", durationMinutes: 20, priceZar: null },
+    { id: "special-occasion", categoryId: "makeup", name: "Special occasion", durationMinutes: 60, priceZar: null },
+    { id: "lashes", categoryId: "lashes", name: "Lashes", durationMinutes: 60, priceZar: null },
+    { id: "wig-install", categoryId: "lashes", name: "Wig install", durationMinutes: 90, priceZar: null },
+    { id: "extension-install", categoryId: "lashes", name: "Extension install", durationMinutes: 120, priceZar: null },
+    { id: "install-styling", categoryId: "lashes", name: "Styling", durationMinutes: 45, priceZar: null },
+    { id: "deep-condition", categoryId: "treatments", name: "Deep condition", durationMinutes: 45, priceZar: null },
+    { id: "scalp-treatment", categoryId: "treatments", name: "Scalp treatment", durationMinutes: 30, priceZar: null },
+    { id: "steam-treatment", categoryId: "treatments", name: "Steam treatment", durationMinutes: 45, priceZar: null },
+  ] as Service[],
+  /** Sample team: replace with real names, roles, photos and the services each person does. */
+  staff: [
+    { id: "stylist-1", name: "Stylist 1", role: "Braids specialist", categoryIds: ["braids", "kiddies", "treatments"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-2", name: "Stylist 2", role: "Braids specialist", categoryIds: ["braids", "kiddies"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [] } },
+    { id: "stylist-3", name: "Stylist 3", role: "Kids stylist", categoryIds: ["kiddies", "cuts", "treatments"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-4", name: "Stylist 4", role: "Stylist", categoryIds: ["braids", "cuts", "lashes"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-5", name: "Stylist 5", role: "Install specialist", categoryIds: ["lashes", "treatments"], serviceIds: ["wig-install", "extension-install", "install-styling", "deep-condition", "scalp-treatment", "steam-treatment"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { wed: [] } },
+    { id: "barber-1", name: "Barber 1", role: "Barber", categoryIds: ["cuts"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "nails-1", name: "Nail tech 1", role: "Nail technician", categoryIds: ["nails"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "nails-2", name: "Nail tech 2", role: "Nail technician", categoryIds: ["nails"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { thu: [] } },
+    { id: "makeup-1", name: "Makeup artist 1", role: "Makeup & lash artist", categoryIds: ["makeup", "lashes"], serviceIds: ["birthday-glam", "face-sparkle", "special-occasion", "lashes"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "makeup-2", name: "Makeup artist 2", role: "Makeup artist", categoryIds: ["makeup"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [], wed: [] } },
+  ] as StaffMember[],
+  /** Add real photos of the salon's work. Until then the gallery shows empty frames. */
+  gallery: [] as GalleryItem[],
 };
+
+export type BusinessConfig = typeof business;
+
+export const CLIENT_TYPES = [
+  { id: "child", label: "Child" },
+  { id: "adult", label: "Adult" },
+] as const;
+export type ClientType = (typeof CLIENT_TYPES)[number]["id"];
 
 export function getService(id: string): Service | undefined {
   return business.services.find((s) => s.id === id);
 }
+
+export function getStaff(id: string): StaffMember | undefined {
+  return business.staff.find((s) => s.id === id);
+}
+
+export function getCategory(id: string): Category | undefined {
+  return business.categories.find((c) => c.id === id);
+}
+
+export function servicesIn(categoryId: string): Service[] {
+  return business.services.filter((s) => s.categoryId === categoryId);
+}
+
+export function staffDoesService(staff: StaffMember, service: Service): boolean {
+  if (!staff.categoryIds.includes(service.categoryId)) return false;
+  return !staff.serviceIds || staff.serviceIds.includes(service.id);
+}
+
+export function staffForService(serviceId: string): StaffMember[] {
+  const service = getService(serviceId);
+  return service ? business.staff.filter((s) => staffDoesService(s, service)) : [];
+}
+
+export function servicesForStaff(staffId: string): Service[] {
+  const staff = getStaff(staffId);
+  return staff ? business.services.filter((s) => staffDoesService(staff, s)) : [];
+}
+
+/** Working hours for one person: the salon's hours, narrowed by their own. */
+export function hoursFor(staff: StaffMember): OpeningHours {
+  return { ...business.hours, ...staff.hours } as OpeningHours;
+}
+
+export function initials(name: string): string {
+  const words = name.split(/\s+/).filter(Boolean);
+  return words
+    .slice(0, 2)
+    .map((w) => (/^\d+$/.test(w) ? w : w[0]!.toUpperCase()))
+    .join("");
+}
+
+export const fullName = `${business.name} ${business.descriptor}`;

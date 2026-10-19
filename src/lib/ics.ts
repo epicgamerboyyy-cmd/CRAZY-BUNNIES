@@ -15,7 +15,7 @@ export function buildIcs(e: IcsEvent): string {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Crazy Bunnies 2//Booking//EN",
+    "PRODID:-//Crazy Bunnies Family Salon//Booking//EN",
     "CALSCALE:GREGORIAN",
     `METHOD:${e.cancelled ? "CANCEL" : "PUBLISH"}`,
     "BEGIN:VEVENT",

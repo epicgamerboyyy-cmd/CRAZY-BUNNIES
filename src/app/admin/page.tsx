@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { business } from "@/config/business";
+import { business, getStaff } from "@/config/business";
 import { DatabaseNotConfiguredError } from "@/db";
 import { requireAdmin } from "@/lib/auth";
 import {
@@ -24,18 +24,20 @@ export const metadata: Metadata = { title: "Bookings", robots: { index: false, f
 const fmt = makeFormatters(business.locale, business.timezone);
 const STATUS_LABEL = { confirmed: "Confirmed", completed: "Done", no_show: "No-show", cancelled: "Cancelled" } as const;
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ date?: string; staff?: string }> }) {
   await requireAdmin();
-  const { date: requested } = await searchParams;
+  const { date: requested, staff: staffParam } = await searchParams;
+  const staffFilter = staffParam && getStaff(staffParam) ? staffParam : undefined;
+  const qs = (d: string) => `/admin?date=${d}${staffFilter ? `&staff=${staffFilter}` : ""}`;
   const today = todayLocal();
   const date = requested && isDateString(requested) ? requested : today;
 
   let data;
   try {
     const [bookings, counts, blocks, unsynced] = await Promise.all([
-      listBookingsForDay(date),
-      upcomingCounts(today, 7),
-      listUpcomingBlocks(),
+      listBookingsForDay(date, staffFilter),
+      upcomingCounts(today, 7, staffFilter),
+      listUpcomingBlocks(staffFilter),
       isCalendarConfigured() ? listUnsynced() : Promise.resolve([]),
     ]);
     data = { bookings, counts, blocks, unsynced };
@@ -73,8 +75,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       {business.isSample && (
         <div className="notice notice-warn" role="note">
-          <strong>The site is still showing sample services and hours.</strong>
-          Edit <code>src/config/business.ts</code> with the real details and set <code>isSample</code> to false.
+          <strong>The site is still showing sample team profiles and unconfirmed hours.</strong>
+          Edit <code>src/config/business.ts</code> with the real team, photos and hours, then set <code>isSample</code> to false.
         </div>
       )}
       {!isCalendarConfigured() && (
@@ -92,9 +94,27 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         </div>
       )}
 
+      <form method="get" action="/admin" className={styles.staffFilter}>
+        <input type="hidden" name="date" value={date} />
+        <label htmlFor="staff-filter" className="label">
+          Show bookings for
+        </label>
+        <select key={staffFilter ?? "all"} id="staff-filter" name="staff" defaultValue={staffFilter ?? ""} className="input">
+          <option value="">Everyone</option>
+          {business.staff.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name} ({s.role})
+            </option>
+          ))}
+        </select>
+        <button type="submit" className="btn btn-secondary btn-small">
+          Show
+        </button>
+      </form>
+
       <nav aria-label="Days" className={styles.strip}>
         {strip.map((d) => (
-          <Link key={d} href={`/admin?date=${d}`} className={styles.stripDay} aria-current={d === date ? "date" : undefined}>
+          <Link key={d} href={qs(d)} className={styles.stripDay} aria-current={d === date ? "date" : undefined}>
             <span>{d === today ? "Today" : fmt.calShortDay(d)}</span>
             <strong>{fmt.calDayNum(d)}</strong>
             <span className={styles.stripCount}>
@@ -108,10 +128,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <div className={styles.dayHead}>
           <h2 id="day-title">{fmt.calLong(date)}</h2>
           <div className={styles.dayNav}>
-            <Link className="btn btn-secondary btn-small" href={`/admin?date=${addDays(date, -1)}`}>
+            <Link className="btn btn-secondary btn-small" href={qs(addDays(date, -1))}>
               Previous day
             </Link>
-            <Link className="btn btn-secondary btn-small" href={`/admin?date=${addDays(date, 1)}`}>
+            <Link className="btn btn-secondary btn-small" href={qs(addDays(date, 1))}>
               Next day
             </Link>
             <form method="get" action="/admin" className={styles.jump}>
@@ -119,6 +139,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 Go to date
               </label>
               <input key={date} id="jump" type="date" name="date" defaultValue={date} className="input" />
+              {staffFilter && <input type="hidden" name="staff" value={staffFilter} />}
               <button type="submit" className="btn btn-secondary btn-small">
                 Go
               </button>
@@ -146,7 +167,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                   <p className={styles.rowName}>
                     {b.customerName} <span className={`status status-${b.status}`}>{STATUS_LABEL[b.status]}</span>
                   </p>
-                  <p>{b.serviceName}</p>
+                  <p>
+                    {b.serviceName} <span className="muted">with</span> <strong>{b.staffName}</strong>
+                    {b.clientType && <span className={styles.clientTag}>{b.clientType === "child" ? "Child" : "Adult"}</span>}
+                  </p>
                   <p className={styles.rowMeta}>
                     <a href={`tel:${b.phone.replace(/[^\d+]/g, "")}`}>{b.phone}</a>
                     {b.email && <a href={`mailto:${b.email}`}>{b.email}</a>}
@@ -175,7 +199,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <section aria-labelledby="block-title" className={styles.section}>
         <h2 id="block-title">Block time off</h2>
         <p className="muted">Blocked time can&apos;t be booked online. Existing bookings stay as they are.</p>
-        <BlockForm key={date} defaultDate={date} />
+        <BlockForm key={`${date}-${staffFilter}`} defaultDate={date} defaultStaff={staffFilter ?? ""} staff={business.staff.map((s) => ({ id: s.id, name: s.name }))} />
 
         {blocks.length > 0 && (
           <>
@@ -184,7 +208,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               {blocks.map((bl) => (
                 <li key={bl.id}>
                   <span>
-                    <strong>{fmt.dateLong(bl.startsAt)}</strong>, {fmt.time(bl.startsAt)} to{" "}
+                    <strong>{bl.staffId ? (getStaff(bl.staffId)?.name ?? "Staff member") : "Whole salon"}</strong>: {fmt.dateLong(bl.startsAt)},{" "}
+                    {fmt.time(bl.startsAt)} to{" "}
                     {bl.endsAt.getTime() - bl.startsAt.getTime() >= 86340000 ? "end of day" : fmt.time(bl.endsAt)}
                     {bl.reason && <span className="muted"> ({bl.reason})</span>}
                   </span>

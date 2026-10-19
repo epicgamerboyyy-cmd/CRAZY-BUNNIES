@@ -8,9 +8,9 @@ export function customerEvent(b: Booking): IcsEvent {
     uid: `${b.id}@crazy-bunnies`,
     start: b.startsAt,
     end: b.endsAt,
-    summary: `${b.serviceName} at ${business.name}`,
+    summary: `${b.serviceName} with ${b.staffName} at ${business.name}`,
     description: `Booking ref ${b.ref}. Manage or cancel: ${siteUrl()}/booking/${b.manageToken}`,
-    location: business.address?.lines.join(", "),
+    location: business.address.lines.join(", "),
     cancelled: b.status === "cancelled",
   };
 }

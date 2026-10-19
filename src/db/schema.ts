@@ -10,11 +10,14 @@ export const bookings = pgTable(
     ref: text("ref").notNull().unique(),
     manageToken: text("manage_token").notNull().unique(),
     idempotencyKey: text("idempotency_key").notNull().unique(),
+    staffId: text("staff_id").notNull(),
+    staffName: text("staff_name").notNull(),
     serviceId: text("service_id").notNull(),
     serviceName: text("service_name").notNull(),
     durationMinutes: integer("duration_minutes").notNull(),
     startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
     endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    clientType: text("client_type").$type<"child" | "adult">(),
     customerName: text("customer_name").notNull(),
     phone: text("phone").notNull(),
     email: text("email"),
@@ -33,6 +36,8 @@ export const blocks = pgTable(
   "blocks",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    /** null blocks the whole shop */
+    staffId: text("staff_id"),
     startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
     endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
     reason: text("reason"),
@@ -53,9 +58,10 @@ export type Block = typeof blocks.$inferSelect;
 /**
  * Applied on first connection. Idempotent, so it's safe on every cold start.
  * The exclusion constraint is what actually stops double bookings: two active
- * bookings can never overlap, even if two requests race.
+ * bookings for the same staff member can never overlap, even if requests race.
  */
 export const SCHEMA_SQL = [
+  `CREATE EXTENSION IF NOT EXISTS btree_gist`,
   `CREATE TABLE IF NOT EXISTS bookings (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     ref text NOT NULL UNIQUE,
@@ -80,10 +86,16 @@ export const SCHEMA_SQL = [
     CHECK (status IN ('confirmed','completed','no_show','cancelled'))
   )`,
   `CREATE INDEX IF NOT EXISTS bookings_starts_at_idx ON bookings (starts_at)`,
+  `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS staff_id text NOT NULL DEFAULT 'unassigned'`,
+  `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS staff_name text NOT NULL DEFAULT ''`,
+  `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS client_type text`,
+  // The first version allowed one appointment at a time for the whole shop.
+  `ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_no_overlap`,
   `DO $$ BEGIN
-    ALTER TABLE bookings ADD CONSTRAINT bookings_no_overlap
-      EXCLUDE USING gist (tstzrange(starts_at, ends_at) WITH &&) WHERE (status <> 'cancelled');
+    ALTER TABLE bookings ADD CONSTRAINT bookings_no_overlap_per_staff
+      EXCLUDE USING gist (staff_id WITH =, tstzrange(starts_at, ends_at) WITH &&) WHERE (status <> 'cancelled');
   EXCEPTION WHEN duplicate_object OR duplicate_table THEN NULL; END $$`,
+  `CREATE INDEX IF NOT EXISTS bookings_staff_starts_idx ON bookings (staff_id, starts_at)`,
   `CREATE TABLE IF NOT EXISTS blocks (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     starts_at timestamptz NOT NULL,
@@ -93,6 +105,7 @@ export const SCHEMA_SQL = [
     CHECK (ends_at > starts_at)
   )`,
   `CREATE INDEX IF NOT EXISTS blocks_starts_at_idx ON blocks (starts_at)`,
+  `ALTER TABLE blocks ADD COLUMN IF NOT EXISTS staff_id text`,
   `CREATE TABLE IF NOT EXISTS auth_attempts (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     key text NOT NULL,

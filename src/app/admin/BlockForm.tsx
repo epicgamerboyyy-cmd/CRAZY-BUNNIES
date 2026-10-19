@@ -4,7 +4,15 @@ import { useActionState, useState } from "react";
 import { createBlock, type BlockState } from "./actions";
 import styles from "./admin.module.css";
 
-export function BlockForm({ defaultDate }: { defaultDate: string }) {
+export function BlockForm({
+  defaultDate,
+  defaultStaff,
+  staff,
+}: {
+  defaultDate: string;
+  defaultStaff: string;
+  staff: { id: string; name: string }[];
+}) {
   const [allDay, setAllDay] = useState(false);
   const [state, action, pending] = useActionState<BlockState, FormData>(async (prev, formData) => {
     const next = await createBlock(prev, formData);
@@ -18,6 +26,17 @@ export function BlockForm({ defaultDate }: { defaultDate: string }) {
       <div className="field">
         <label htmlFor="block-date">Date</label>
         <input id="block-date" name="date" type="date" className="input" defaultValue={defaultDate} required />
+      </div>
+      <div className="field">
+        <label htmlFor="block-staff">Who</label>
+        <select id="block-staff" name="staffId" className="input" defaultValue={defaultStaff}>
+          <option value="">Whole salon (nobody can be booked)</option>
+          {staff.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
       </div>
       <label className={styles.check}>
         <input type="checkbox" name="allDay" checked={allDay} onChange={(e) => setAllDay(e.target.checked)} />

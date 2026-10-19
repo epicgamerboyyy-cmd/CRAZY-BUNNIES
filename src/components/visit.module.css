@@ -1,0 +1,157 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s5);
+}
+
+@media (min-width: 60rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+}
+
+.panel {
+  padding: var(--s5);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s5);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  justify-self: start;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: var(--t-sm);
+}
+
+.open {
+  background: var(--mint-soft);
+  color: var(--mint-ink);
+}
+
+.closed {
+  background: var(--berry-soft);
+  color: var(--berry);
+}
+
+.dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s3);
+  color: var(--ink);
+}
+
+.row > svg {
+  color: var(--berry);
+  margin-top: 0.15rem;
+}
+
+.h {
+  font-size: var(--t-md);
+  margin-bottom: var(--s1);
+}
+
+.address {
+  font-style: normal;
+  display: grid;
+}
+
+.phone {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-lg);
+  color: var(--mint-ink);
+  text-decoration: none;
+}
+
+.phone:hover {
+  text-decoration: underline;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+
+.hoursWrap {
+  min-width: 0;
+}
+
+.note {
+  font-size: var(--t-sm);
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.hours {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-top: var(--s2);
+  font-variant-numeric: tabular-nums;
+}
+
+.hours th,
+.hours td {
+  padding: var(--s2) 0;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+
+.hours td {
+  text-align: right;
+}
+
+.hours th {
+  font-weight: 600;
+  width: 55%;
+}
+
+.today th,
+.today td {
+  font-weight: 800;
+}
+
+.todayTag {
+  margin-left: var(--s2);
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--mint-soft);
+  color: var(--mint-ink);
+  font-size: var(--t-xs);
+}
+
+.closedText {
+  color: var(--berry);
+  font-weight: 700;
+}
+
+.map {
+  min-height: 20rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--sand);
+}
+
+.map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 20rem;
+  border: 0;
+}

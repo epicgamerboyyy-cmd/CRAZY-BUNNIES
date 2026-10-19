@@ -1,0 +1,93 @@
+.cover {
+  object-fit: cover;
+}
+
+/* Arch portrait, echoing the arched mirrors in the salon */
+.portrait {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--arch);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.initials {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-top: 12%;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 26cqi, 4rem);
+  color: var(--berry);
+}
+
+.frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.arch {
+  border-radius: var(--arch);
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--s2);
+  padding: var(--s4);
+  color: var(--berry);
+  font-weight: 800;
+  font-size: var(--t-sm);
+  text-align: center;
+  background-image: radial-gradient(color-mix(in srgb, var(--berry) 14%, transparent) 1.2px, transparent 1.4px);
+  background-size: 16px 16px;
+}
+
+/* Staff card */
+.staffCard {
+  display: grid;
+  gap: var(--s1);
+  text-decoration: none;
+  color: var(--ink);
+  border-radius: var(--radius-lg);
+  padding-bottom: var(--s2);
+}
+
+.staffCard .portrait {
+  margin-bottom: var(--s2);
+  transition: transform 180ms ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .staffCard:hover .portrait {
+    transform: translateY(-4px);
+  }
+}
+
+.staffCard:hover .staffName {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+.staffName {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-md);
+  line-height: 1.15;
+}
+
+.staffRole {
+  color: var(--muted);
+  font-size: var(--t-sm);
+}

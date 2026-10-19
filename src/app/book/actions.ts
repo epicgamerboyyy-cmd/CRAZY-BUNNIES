@@ -14,9 +14,11 @@ export interface BookingFormState {
 
 const schema = z.object({
   serviceId: z.string().min(1).max(64),
+  staffId: z.string().min(1).max(64),
   startsAt: z.iso.datetime(),
+  clientType: z.enum(["child", "adult"]),
   idempotencyKey: z.string().min(16).max(64),
-  customerName: z.string().trim().min(2, "Enter your name.").max(80, "Keep your name under 80 characters."),
+  customerName: z.string().trim().min(2, "Enter the name the booking is under.").max(80, "Keep your name under 80 characters."),
   phone: z
     .string()
     .trim()
@@ -29,7 +31,7 @@ const schema = z.object({
 
 export async function submitBooking(_prev: BookingFormState, formData: FormData): Promise<BookingFormState> {
   const raw = Object.fromEntries(
-    ["serviceId", "startsAt", "idempotencyKey", "customerName", "phone", "email", "notes"].map((k) => [
+    ["serviceId", "staffId", "startsAt", "clientType", "idempotencyKey", "customerName", "phone", "email", "notes"].map((k) => [
       k,
       String(formData.get(k) ?? ""),
     ]),
@@ -56,7 +58,9 @@ export async function submitBooking(_prev: BookingFormState, formData: FormData)
   try {
     const result = await createBooking({
       serviceId: d.serviceId,
+      staffId: d.staffId,
       startsAt: new Date(d.startsAt),
+      clientType: d.clientType,
       customerName: d.customerName,
       phone: d.phone,
       email: d.email || null,
@@ -66,7 +70,9 @@ export async function submitBooking(_prev: BookingFormState, formData: FormData)
     if (!result.ok) {
       return result.reason === "slot_unavailable"
         ? { values, slotTaken: true, formError: "That time was just taken. Pick another time and book again." }
-        : { values, formError: "That service isn't available any more. Choose another service." };
+        : result.reason === "unknown_staff"
+          ? { values, formError: "That person doesn't offer this service. Choose someone else." }
+          : { values, formError: "That service isn't available any more. Choose another service." };
     }
     const booking = result.booking;
     token = booking.manageToken;

@@ -1,7 +1,16 @@
 import "server-only";
 import { randomBytes, randomInt } from "node:crypto";
-import { and, asc, eq, gt, gte, lt, ne } from "drizzle-orm";
-import { business, getService } from "@/config/business";
+import { and, asc, eq, gt, gte, isNull, lt, ne, or } from "drizzle-orm";
+import {
+  business,
+  getService,
+  getStaff,
+  hoursFor,
+  staffDoesService,
+  staffForService,
+  type Service,
+  type StaffMember,
+} from "@/config/business";
 import { getDb, schema } from "@/db";
 import type { Block, Booking, BookingStatus } from "@/db/schema";
 import { calendarBusy, createCalendarEvent, deleteCalendarEvent, isCalendarConfigured } from "@/lib/gcal";
@@ -11,6 +20,9 @@ import { addDays, localDate, makeFormatters, weekdayOf, zonedTimeToUtc } from "@
 const { bookings, blocks } = schema;
 const TZ = business.timezone;
 const fmt = makeFormatters(business.locale, TZ);
+
+/** Booking with whoever is free. */
+export const ANY_STAFF = "any";
 
 export type DayStatus = "open" | "full" | "closed";
 export interface DayAvailability {
@@ -35,15 +47,20 @@ export const isOpenOn = (date: string) =>
   !business.closedDates.includes(date) && (business.hours[weekdayOf(date)]?.length ?? 0) > 0;
 export const lastBookableDate = () => addDays(todayLocal(), business.booking.maxDaysAhead);
 
-async function busyBetween(from: number, to: number): Promise<Interval[]> {
+interface StaffBusy extends Interval {
+  /** undefined means it applies to everyone (whole-shop block or shop calendar). */
+  staffId?: string;
+}
+
+async function busyBetween(from: number, to: number): Promise<StaffBusy[]> {
   const db = await getDb();
   const [bookingRows, blockRows, calendar] = await Promise.all([
     db
-      .select({ start: bookings.startsAt, end: bookings.endsAt })
+      .select({ start: bookings.startsAt, end: bookings.endsAt, staffId: bookings.staffId })
       .from(bookings)
       .where(and(ne(bookings.status, "cancelled"), lt(bookings.startsAt, new Date(to)), gt(bookings.endsAt, new Date(from)))),
     db
-      .select({ start: blocks.startsAt, end: blocks.endsAt })
+      .select({ start: blocks.startsAt, end: blocks.endsAt, staffId: blocks.staffId })
       .from(blocks)
       .where(and(lt(blocks.startsAt, new Date(to)), gt(blocks.endsAt, new Date(from)))),
     calendarBusy(from, to).catch((err) => {
@@ -53,15 +70,13 @@ async function busyBetween(from: number, to: number): Promise<Interval[]> {
     }),
   ]);
   return [
-    ...bookingRows.map((r) => ({ start: r.start.getTime(), end: r.end.getTime() })),
-    ...blockRows.map((r) => ({ start: r.start.getTime(), end: r.end.getTime() })),
+    ...bookingRows.map((r) => ({ start: r.start.getTime(), end: r.end.getTime(), staffId: r.staffId })),
+    ...blockRows.map((r) => ({ start: r.start.getTime(), end: r.end.getTime(), staffId: r.staffId ?? undefined })),
     ...calendar,
   ];
 }
 
-export async function getAvailability(serviceId: string, from: string, days: number): Promise<DayAvailability[]> {
-  const service = getService(serviceId);
-  if (!service) throw new Error("Unknown service");
+function dateRange(from: string, days: number): string[] {
   const first = from < todayLocal() ? todayLocal() : from;
   const last = lastBookableDate();
   const dates: string[] = [];
@@ -70,32 +85,78 @@ export async function getAvailability(serviceId: string, from: string, days: num
     if (d > last) break;
     dates.push(d);
   }
+  return dates;
+}
+
+function slotsFor(staff: StaffMember, service: Service, date: string, busy: StaffBusy[], now: number): number[] {
+  return generateSlots({
+    date,
+    durationMinutes: service.durationMinutes,
+    hours: hoursFor(staff),
+    closedDates: business.closedDates,
+    timezone: TZ,
+    stepMinutes: business.booking.slotStepMinutes,
+    bufferMinutes: business.booking.bufferMinutes,
+    minNoticeMinutes: business.booking.minNoticeMinutes,
+    now,
+    busy: busy.filter((b) => b.staffId === undefined || b.staffId === staff.id),
+  });
+}
+
+/** Staff who could do this service, narrowed to one person unless "any". */
+function candidates(service: Service, staffId: string): StaffMember[] | null {
+  if (staffId === ANY_STAFF) return staffForService(service.id);
+  const staff = getStaff(staffId);
+  return staff && staffDoesService(staff, service) ? [staff] : null;
+}
+
+export async function getAvailability(
+  serviceId: string,
+  staffId: string,
+  from: string,
+  days: number,
+): Promise<DayAvailability[]> {
+  const service = getService(serviceId);
+  if (!service) throw new Error("Unknown service");
+  const team = candidates(service, staffId);
+  if (!team) throw new Error("That person doesn't do this service");
+  const dates = dateRange(from, days);
   if (!dates.length) return [];
 
-  const rangeStart = zonedTimeToUtc(dates[0]!, "00:00", TZ);
-  const rangeEnd = zonedTimeToUtc(addDays(dates.at(-1)!, 1), "00:00", TZ);
-  const busy = await busyBetween(rangeStart, rangeEnd);
+  const busy = await busyBetween(
+    zonedTimeToUtc(dates[0]!, "00:00", TZ),
+    zonedTimeToUtc(addDays(dates.at(-1)!, 1), "00:00", TZ),
+  );
   const now = Date.now();
 
   return dates.map((date) => {
-    const slots = generateSlots({
-      date,
-      durationMinutes: service.durationMinutes,
-      hours: business.hours,
-      closedDates: business.closedDates,
-      timezone: TZ,
-      stepMinutes: business.booking.slotStepMinutes,
-      bufferMinutes: business.booking.bufferMinutes,
-      minNoticeMinutes: business.booking.minNoticeMinutes,
-      now,
-      busy,
-    });
+    const all = new Set<number>();
+    for (const person of team) for (const s of slotsFor(person, service, date, busy, now)) all.add(s);
+    const slots = [...all].sort((a, b) => a - b);
+    const works = team.some((p) => isOpenOn(date) && (hoursFor(p)[weekdayOf(date)]?.length ?? 0) > 0);
     return {
       date,
-      status: slots.length ? "open" : isOpenOn(date) ? "full" : "closed",
+      status: slots.length ? "open" : works ? "full" : "closed",
       slots: slots.map((s) => new Date(s).toISOString()),
     };
   });
+}
+
+/**
+ * Who can take this exact start time, least busy that day first, so "anyone
+ * available" spreads work across the team instead of always picking the same person.
+ */
+async function freeStaffAt(service: Service, staffId: string, start: number): Promise<StaffMember[]> {
+  const team = candidates(service, staffId) ?? [];
+  const date = localDate(start, TZ);
+  const busy = await busyBetween(zonedTimeToUtc(date, "00:00", TZ), zonedTimeToUtc(addDays(date, 1), "00:00", TZ));
+  const now = Date.now();
+  const load = (id: string) => busy.filter((b) => b.staffId === id).length;
+  return team
+    .filter((p) => slotsFor(p, service, date, busy, now).includes(start))
+    .map((p, order) => ({ p, order, load: load(p.id) }))
+    .sort((a, b) => a.load - b.load || a.order - b.order)
+    .map((x) => x.p);
 }
 
 const REF_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -103,7 +164,10 @@ const newRef = () => `CB-${Array.from({ length: 6 }, () => REF_ALPHABET[randomIn
 
 export interface NewBooking {
   serviceId: string;
+  /** A staff id, or ANY_STAFF to assign whoever is free. */
+  staffId: string;
   startsAt: Date;
+  clientType: "child" | "adult";
   customerName: string;
   phone: string;
   email: string | null;
@@ -113,7 +177,7 @@ export interface NewBooking {
 
 export type CreateResult =
   | { ok: true; booking: Booking }
-  | { ok: false; reason: "unknown_service" | "slot_unavailable" };
+  | { ok: false; reason: "unknown_service" | "unknown_staff" | "slot_unavailable" };
 
 export async function createBooking(input: NewBooking): Promise<CreateResult> {
   const db = await getDb();
@@ -122,56 +186,61 @@ export async function createBooking(input: NewBooking): Promise<CreateResult> {
 
   const service = getService(input.serviceId);
   if (!service) return { ok: false, reason: "unknown_service" };
+  if (!candidates(service, input.staffId)) return { ok: false, reason: "unknown_staff" };
 
   // Re-check against live availability so a stale or hand-crafted request can't
-  // book outside opening hours. The DB constraint covers the race after this.
-  const date = localDate(input.startsAt.getTime(), TZ);
-  const [day] = await getAvailability(service.id, date, 1);
-  if (!day || day.date !== date || !day.slots.includes(input.startsAt.toISOString())) {
-    return { ok: false, reason: "slot_unavailable" };
-  }
+  // book outside working hours. The DB constraint covers the race after this.
+  const options = await freeStaffAt(service, input.staffId, input.startsAt.getTime());
+  if (!options.length) return { ok: false, reason: "slot_unavailable" };
 
   const endsAt = new Date(input.startsAt.getTime() + service.durationMinutes * 60000);
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const [booking] = await db
-        .insert(bookings)
-        .values({
-          ref: newRef(),
-          manageToken: randomBytes(24).toString("base64url"),
-          idempotencyKey: input.idempotencyKey,
-          serviceId: service.id,
-          serviceName: service.name,
-          durationMinutes: service.durationMinutes,
-          startsAt: input.startsAt,
-          endsAt,
-          customerName: input.customerName,
-          phone: input.phone,
-          email: input.email,
-          notes: input.notes,
-        })
-        .returning();
-      return { ok: true, booking: booking! };
-    } catch (err) {
-      const code = pgCode(err);
-      if (code === "23P01") return { ok: false, reason: "slot_unavailable" };
-      if (code === "23505") {
-        // Double submit raced past the first check, or a ref collision (retry).
-        const dup = await db.query.bookings.findFirst({ where: eq(bookings.idempotencyKey, input.idempotencyKey) });
-        if (dup) return { ok: true, booking: dup };
-        continue;
+  // For "anyone", try the next free person if someone else grabbed the first one meanwhile.
+  for (const person of options) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const [booking] = await db
+          .insert(bookings)
+          .values({
+            ref: newRef(),
+            manageToken: randomBytes(24).toString("base64url"),
+            idempotencyKey: input.idempotencyKey,
+            staffId: person.id,
+            staffName: person.name,
+            serviceId: service.id,
+            serviceName: service.name,
+            durationMinutes: service.durationMinutes,
+            startsAt: input.startsAt,
+            endsAt,
+            clientType: input.clientType,
+            customerName: input.customerName,
+            phone: input.phone,
+            email: input.email,
+            notes: input.notes,
+          })
+          .returning();
+        return { ok: true, booking: booking! };
+      } catch (err) {
+        const code = pgCode(err);
+        if (code === "23P01") break;
+        if (code === "23505") {
+          // Double submit raced past the first check, or a ref collision (retry).
+          const dup = await db.query.bookings.findFirst({ where: eq(bookings.idempotencyKey, input.idempotencyKey) });
+          if (dup) return { ok: true, booking: dup };
+          continue;
+        }
+        throw err;
       }
-      throw err;
     }
   }
-  throw new Error("Could not create booking");
+  return { ok: false, reason: "slot_unavailable" };
 }
 
 function eventDescription(b: Booking): string {
   return [
     `Ref: ${b.ref}`,
+    `With: ${b.staffName}`,
     `Service: ${b.serviceName}`,
-    `Customer: ${b.customerName}`,
+    `Customer: ${b.customerName}${b.clientType ? ` (${b.clientType})` : ""}`,
     `Phone: ${b.phone}`,
     b.email ? `Email: ${b.email}` : null,
     b.notes ? `Notes: ${b.notes}` : null,
@@ -186,7 +255,7 @@ export async function syncBookingToCalendar(b: Booking): Promise<void> {
   const db = await getDb();
   try {
     const eventId = await createCalendarEvent({
-      summary: `${b.customerName}: ${b.serviceName}`,
+      summary: `${b.customerName}: ${b.serviceName} with ${b.staffName}`,
       description: eventDescription(b),
       start: b.startsAt,
       end: b.endsAt,
@@ -245,24 +314,35 @@ export async function setBookingStatus(id: string, status: BookingStatus, by: "c
   return updated;
 }
 
-export async function listBookingsForDay(date: string): Promise<Booking[]> {
+export async function listBookingsForDay(date: string, staffId?: string): Promise<Booking[]> {
   const db = await getDb();
   const start = new Date(zonedTimeToUtc(date, "00:00", TZ));
   const end = new Date(zonedTimeToUtc(addDays(date, 1), "00:00", TZ));
   return db.query.bookings.findMany({
-    where: and(gte(bookings.startsAt, start), lt(bookings.startsAt, end)),
+    where: and(
+      gte(bookings.startsAt, start),
+      lt(bookings.startsAt, end),
+      staffId ? eq(bookings.staffId, staffId) : undefined,
+    ),
     orderBy: [asc(bookings.startsAt)],
   });
 }
 
-export async function upcomingCounts(from: string, days: number): Promise<Record<string, number>> {
+export async function upcomingCounts(from: string, days: number, staffId?: string): Promise<Record<string, number>> {
   const db = await getDb();
   const start = new Date(zonedTimeToUtc(from, "00:00", TZ));
   const end = new Date(zonedTimeToUtc(addDays(from, days), "00:00", TZ));
   const rows = await db
     .select({ startsAt: bookings.startsAt })
     .from(bookings)
-    .where(and(ne(bookings.status, "cancelled"), gte(bookings.startsAt, start), lt(bookings.startsAt, end)));
+    .where(
+      and(
+        ne(bookings.status, "cancelled"),
+        gte(bookings.startsAt, start),
+        lt(bookings.startsAt, end),
+        staffId ? eq(bookings.staffId, staffId) : undefined,
+      ),
+    );
   const counts: Record<string, number> = {};
   for (const r of rows) {
     const d = localDate(r.startsAt.getTime(), TZ);
@@ -279,14 +359,20 @@ export async function listUnsynced(): Promise<Booking[]> {
   }).then((rows) => rows.filter((r) => !r.gcalEventId));
 }
 
-export async function listUpcomingBlocks(): Promise<Block[]> {
+export async function listUpcomingBlocks(staffId?: string): Promise<Block[]> {
   const db = await getDb();
-  return db.query.blocks.findMany({ where: gt(blocks.endsAt, new Date()), orderBy: [asc(blocks.startsAt)] });
+  return db.query.blocks.findMany({
+    where: and(
+      gt(blocks.endsAt, new Date()),
+      staffId ? or(isNull(blocks.staffId), eq(blocks.staffId, staffId)) : undefined,
+    ),
+    orderBy: [asc(blocks.startsAt)],
+  });
 }
 
-export async function addBlock(startsAt: Date, endsAt: Date, reason: string | null): Promise<void> {
+export async function addBlock(startsAt: Date, endsAt: Date, reason: string | null, staffId: string | null): Promise<void> {
   const db = await getDb();
-  await db.insert(blocks).values({ startsAt, endsAt, reason });
+  await db.insert(blocks).values({ startsAt, endsAt, reason, staffId });
 }
 
 export async function removeBlock(id: string): Promise<void> {
@@ -296,10 +382,15 @@ export async function removeBlock(id: string): Promise<void> {
 }
 
 /** Confirmed bookings that overlap a range, used to warn before blocking time. */
-export async function bookingsOverlapping(startsAt: Date, endsAt: Date): Promise<Booking[]> {
+export async function bookingsOverlapping(startsAt: Date, endsAt: Date, staffId: string | null): Promise<Booking[]> {
   const db = await getDb();
   return db.query.bookings.findMany({
-    where: and(ne(bookings.status, "cancelled"), lt(bookings.startsAt, endsAt), gt(bookings.endsAt, startsAt)),
+    where: and(
+      ne(bookings.status, "cancelled"),
+      lt(bookings.startsAt, endsAt),
+      gt(bookings.endsAt, startsAt),
+      staffId ? eq(bookings.staffId, staffId) : undefined,
+    ),
     orderBy: [asc(bookings.startsAt)],
   });
 }

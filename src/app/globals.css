@@ -1,33 +1,50 @@
+/*
+ * Crazy Bunnies design system.
+ * Brand colours come from the salon's existing site (berry + mint), tuned so every
+ * text pair passes WCAG AA. Rounded type and arch frames echo the salon interior.
+ */
 :root {
-  --paper: #f3f4ef;
-  --surface: #ffffff;
-  --ink: #17211c;
-  --muted: #4e5b53;
-  --rule: #d3d9d0;
-  --rule-strong: #a9b4ab;
-  /* Edges of interactive controls: 3:1+ against white and paper (WCAG 1.4.11) */
-  --control-border: #78857c;
-  --action: #1f48c6;
-  --action-hover: #1a3ba3;
-  --action-soft: #e3e9fb;
-  --ok: #1e6b45;
-  --ok-soft: #e1f0e7;
+  --cream: #fbf7f1;
+  --sand: #f4eadc;
+  --card: #fffdfa;
+  --ink: #2a1622;
+  --muted: #66545e;
+  --rule: #ebe0d6;
+  --control-border: #8f7d86;
+
+  --berry: #7a1d4b;
+  --berry-deep: #5c1338;
+  --berry-soft: #f7e6ee;
+  --blush: #f9dbe6;
+  --mint: #6cc5a6;
+  --mint-soft: #dff2ea;
+  --mint-ink: #1b6a50;
+  --sun: #f4b740;
+
+  /* Portrait placeholder tints */
+  --tint-1: #f9dbe6;
+  --tint-2: #dff2ea;
+  --tint-3: #fbe7c2;
+  --tint-4: #e8def0;
+
+  --ok: #1b6a50;
+  --ok-soft: #dff2ea;
   --warn: #8a5300;
   --warn-soft: #fbf0d9;
   --error: #b3261e;
   --error-soft: #fbe7e5;
-  --focus: #1f48c6;
+  --focus: #7a1d4b;
 
-  --font-display: var(--font-bricolage), "Arial Narrow", system-ui, sans-serif;
-  --font-body: var(--font-atkinson), system-ui, sans-serif;
+  --font-display: var(--font-fredoka), "Trebuchet MS", system-ui, sans-serif;
+  --font-body: var(--font-nunito), system-ui, sans-serif;
 
-  /* Type scale (~1.25, with a jump for the hero) */
-  --t-sm: 0.875rem;
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
   --t-base: 1.0625rem;
   --t-md: 1.25rem;
   --t-lg: 1.5625rem;
-  --t-xl: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
-  --t-hero: clamp(2.8rem, 1.6rem + 6vw, 5.6rem);
+  --t-xl: clamp(1.9rem, 1.4rem + 2vw, 2.75rem);
+  --t-hero: clamp(2.75rem, 1.5rem + 5.5vw, 5.25rem);
 
   --s1: 0.25rem;
   --s2: 0.5rem;
@@ -36,13 +53,25 @@
   --s5: 1.5rem;
   --s6: 2rem;
   --s7: 3rem;
-  --s8: 4.5rem;
+  --s8: 5rem;
 
-  --radius: 6px;
-  --measure: 66ch;
-  --page: 72rem;
+  --radius: 12px;
+  --radius-lg: 22px;
+  --arch: 999px 999px var(--radius-lg) var(--radius-lg);
+  --shadow: 0 1px 2px rgb(42 22 34 / 0.06), 0 8px 24px -12px rgb(42 22 34 / 0.18);
+
+  --measure: 64ch;
+  --page: 74rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
-  --header-h: 4rem;
+  --header-h: 4.25rem;
+  --actionbar-h: 0px;
+}
+
+/* The mobile action bar (Book / Call / Directions) sits at the bottom on small screens. */
+@media (max-width: 51.99rem) {
+  :root {
+    --actionbar-h: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 *,
@@ -64,42 +93,49 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--cream);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--t-base);
-  line-height: 1.55;
+  line-height: 1.6;
   min-height: 100dvh;
-  /* Long words (and very large text sizes) wrap instead of pushing the page sideways */
   overflow-wrap: break-word;
   display: flex;
   flex-direction: column;
   overflow-x: clip;
+  /* Room for the mobile action bar so it never covers the footer */
+  padding-bottom: var(--actionbar-h);
 }
 
 main {
   flex: 1;
 }
 
+main:focus {
+  outline: none;
+}
+
 h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
   margin: 0;
   text-wrap: balance;
   hyphens: auto;
+  /* Lets a single long word break instead of widening the page at large text sizes */
+  overflow-wrap: anywhere;
 }
 
+h1,
 h2 {
   font-size: var(--t-xl);
 }
 
 h3 {
   font-size: var(--t-md);
-  letter-spacing: -0.01em;
 }
 
 p {
@@ -109,8 +145,8 @@ p {
 }
 
 a {
-  color: var(--action);
-  text-underline-offset: 0.18em;
+  color: var(--berry);
+  text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
 
@@ -121,7 +157,7 @@ a:hover {
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 img,
@@ -138,7 +174,6 @@ textarea {
   color: inherit;
 }
 
-/* Removes the double-tap zoom delay on touch devices */
 a,
 button,
 input,
@@ -146,6 +181,10 @@ label,
 select,
 textarea {
   touch-action: manipulation;
+}
+
+code {
+  font-size: 0.9em;
 }
 
 .sr-only {
@@ -165,8 +204,8 @@ textarea {
   left: var(--s4);
   top: -100px;
   z-index: 100;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--berry);
+  color: #fff;
   padding: var(--s3) var(--s4);
   border-radius: var(--radius);
 }
@@ -194,20 +233,52 @@ textarea {
   padding-block: var(--s2);
 }
 
+/* Section rhythm */
+.section {
+  padding-block: var(--s8);
+}
+
+.section-tight {
+  padding-block: var(--s7);
+}
+
+.section-head {
+  display: grid;
+  gap: var(--s3);
+  margin-bottom: var(--s6);
+  max-width: 44rem;
+}
+
+.section-head p {
+  color: var(--muted);
+  font-size: var(--t-md);
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--mint-ink);
+  font-size: var(--t-md);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--s2);
-  min-height: 2.875rem;
+  min-height: 3rem;
   padding: 0 var(--s5);
   border: 2px solid transparent;
-  border-radius: var(--radius);
-  font-weight: 700;
+  border-radius: 999px;
+  font-weight: 800;
   text-decoration: none;
+  text-align: center;
+  /* Wrap rather than push the page sideways at large text sizes */
+  max-width: 100%;
+  overflow-wrap: break-word;
   cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease, color 140ms ease;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -216,14 +287,39 @@ textarea {
   }
 }
 
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn svg {
+  flex: none;
+}
+
 .btn-primary {
-  background: var(--action);
+  background: var(--berry);
   color: #fff;
 }
 
 .btn-primary:hover {
-  background: var(--action-hover);
-  text-decoration: none;
+  background: var(--berry-deep);
+}
+
+.btn-mint {
+  background: var(--mint);
+  color: var(--ink);
+}
+
+.btn-mint:hover {
+  background: #57b394;
+}
+
+.btn-sun {
+  background: var(--sun);
+  color: var(--ink);
+}
+
+.btn-sun:hover {
+  background: #e7a52b;
 }
 
 .btn-secondary {
@@ -234,8 +330,25 @@ textarea {
 
 .btn-secondary:hover {
   background: var(--ink);
-  color: var(--paper);
-  text-decoration: none;
+  color: var(--cream);
+}
+
+/* For use on berry backgrounds */
+.btn-light {
+  background: transparent;
+  border-color: var(--cream);
+  color: var(--cream);
+}
+
+.btn-light:hover {
+  background: var(--cream);
+  color: var(--berry);
+}
+
+.btn-light:focus-visible,
+.btn-mint:focus-visible,
+.btn-sun:focus-visible {
+  outline-color: currentColor;
 }
 
 .btn-danger {
@@ -251,21 +364,66 @@ textarea {
 
 .btn[disabled],
 .btn[aria-disabled="true"] {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .btn-small {
-  /* Smaller type and padding, but still a 44px touch target */
   min-height: 2.75rem;
   padding: 0 var(--s4);
   font-size: var(--t-sm);
 }
 
+.btn-block {
+  width: 100%;
+}
+
+/* Chips: small labels for what's included, not buttons */
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: var(--sand);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.price-tag {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: var(--blush);
+  color: var(--berry);
+  font-weight: 800;
+  font-size: var(--t-sm);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.arch {
+  border-radius: var(--arch);
+  overflow: hidden;
+}
+
 /* Notices */
 .notice {
-  border-left: 4px solid var(--rule-strong);
-  background: var(--surface);
+  border-left: 4px solid var(--control-border);
+  background: var(--card);
   padding: var(--s3) var(--s4);
   border-radius: 0 var(--radius) var(--radius) 0;
 }
@@ -298,7 +456,7 @@ textarea {
 
 .field label,
 .label {
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .field .hint {
@@ -308,13 +466,12 @@ textarea {
 
 .input {
   width: 100%;
-  /* Inputs have an intrinsic width from their font size; let them shrink at large text sizes */
   min-width: 0;
-  min-height: 2.875rem;
-  padding: var(--s2) var(--s3);
+  min-height: 3rem;
+  padding: var(--s2) var(--s4);
   border: 1.5px solid var(--control-border);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--card);
 }
 
 .input:hover {
@@ -338,16 +495,16 @@ textarea.input {
 .field-error {
   color: var(--error);
   font-size: var(--t-sm);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* Status tag: always has text, colour is a secondary cue */
 .status {
   display: inline-block;
-  padding: 0.1rem 0.5rem;
-  border-radius: 4px;
-  font-size: var(--t-sm);
-  font-weight: 700;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  font-weight: 800;
   border: 1px solid currentColor;
 }
 
@@ -374,10 +531,12 @@ textarea.input {
   .no-print,
   .site-header,
   .site-footer,
-  .sample-banner {
+  .sample-banner,
+  .action-bar {
     display: none !important;
   }
   body {
     background: #fff;
+    padding: 0;
   }
 }

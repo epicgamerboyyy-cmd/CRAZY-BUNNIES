@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { business } from "@/config/business";
+import { business, getStaff } from "@/config/business";
 import { BOOKING_STATUSES, type BookingStatus } from "@/db/schema";
 import {
   adminConfigError,
@@ -83,6 +83,10 @@ export async function createBlock(_prev: BlockState, formData: FormData): Promis
   const start = allDay ? "00:00" : String(formData.get("start") ?? "");
   const end = allDay ? "23:59" : String(formData.get("end") ?? "");
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 120) || null;
+  const staffRaw = String(formData.get("staffId") ?? "");
+  const staff = staffRaw ? getStaff(staffRaw) : null;
+  if (staffRaw && !staff) return { error: "Choose who this block is for." };
+  const staffId = staff?.id ?? null;
 
   if (!isDateString(date)) return { error: "Choose a date." };
   if (!isTimeString(start) || !isTimeString(end)) return { error: "Enter a start and end time, or tick whole day." };
@@ -92,11 +96,12 @@ export async function createBlock(_prev: BlockState, formData: FormData): Promis
   const endsAt = new Date(zonedTimeToUtc(date, end, business.timezone) + (allDay ? 60000 : 0));
   if (endsAt.getTime() < Date.now()) return { error: "That time has already passed." };
 
-  await addBlock(startsAt, endsAt, reason);
+  await addBlock(startsAt, endsAt, reason, staffId);
   revalidatePath("/admin");
 
-  const clashes = await bookingsOverlapping(startsAt, endsAt);
-  const label = allDay ? fmt.calLong(date) : `${fmt.calLong(date)}, ${start} to ${end}`;
+  const clashes = await bookingsOverlapping(startsAt, endsAt, staffId);
+  const when = allDay ? fmt.calLong(date) : `${fmt.calLong(date)}, ${start} to ${end}`;
+  const label = `${when} for ${staff ? staff.name : "the whole shop"}`;
   if (clashes.length) {
     return {
       success: `Blocked ${label}.`,

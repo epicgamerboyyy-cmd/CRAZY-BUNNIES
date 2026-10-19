@@ -101,3 +101,6 @@ export function formatDuration(minutes: number): string {
   if (!h) return `${m} min`;
   return m ? `${h} h ${m} min` : `${h} h`;
 }
+
+/** Current time. Wrapped so server components read the clock in one obvious place. */
+export const nowMs = () => Date.now();

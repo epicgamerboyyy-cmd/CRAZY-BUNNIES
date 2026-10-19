@@ -1,33 +1,62 @@
 import Link from "next/link";
-import { business } from "@/config/business";
-import { whatsappLink } from "@/lib/contact";
+import { business, fullName } from "@/config/business";
+import { directionsUrl, instagramUrl, telLink, whatsappLink } from "@/lib/contact";
+import { BunnyMark, Icon } from "./Icon";
+import { NAV_LINKS } from "./SiteHeader";
 import styles from "./chrome.module.css";
 
 export function SiteFooter() {
-  const { phone, email, whatsapp } = business.contact;
+  const { phone, whatsapp, email, instagram, facebook } = business.contact;
   return (
     <footer className={`${styles.footer} site-footer`}>
       <div className={`wrap ${styles.footerInner}`}>
-        <div>
-          <p className={styles.footerName}>{business.name}</p>
-          {business.address && <p className="muted">{business.address.lines.join(", ")}</p>}
+        <div className={styles.footerBrand}>
+          <p className={styles.footerBrandRow}>
+            <BunnyMark size={36} />
+            {fullName}
+          </p>
+          <p className={styles.footerMuted}>Modern hair and beauty for children and adults in Centurion, with thoughtful service and gentle organic products.</p>
+          {(instagram || facebook) && (
+            <div className={styles.social}>
+              {instagram && (
+                <a href={instagramUrl(instagram)} target="_blank" rel="noopener noreferrer">
+                  <Icon name="instagram" label={`Instagram @${instagram}`} />
+                </a>
+              )}
+              {facebook && (
+                <a href={facebook} target="_blank" rel="noopener noreferrer">
+                  <Icon name="facebook" label="Facebook" />
+                </a>
+              )}
+            </div>
+          )}
         </div>
-        <nav aria-label="Footer">
-          <ul className={styles.footerLinks}>
+
+        <div>
+          <h2 className={styles.footerHeading}>Visit us</h2>
+          <address style={{ fontStyle: "normal" }} className={styles.footerMuted}>
+            {business.address.lines.map((l) => (
+              <span key={l} style={{ display: "block" }}>
+                {l}
+              </span>
+            ))}
+          </address>
+          <ul className={styles.footerList}>
             <li>
-              <Link href="/book">Book an appointment</Link>
+              <a href={directionsUrl()} target="_blank" rel="noopener noreferrer">
+                <Icon name="pin" size={18} /> Get directions
+              </a>
             </li>
             <li>
-              <Link href="/#hours">Opening hours</Link>
+              <a href={telLink(phone)}>
+                <Icon name="phone" size={18} /> {phone}
+              </a>
             </li>
-            {phone && (
-              <li>
-                <a href={`tel:${phone.replace(/\s/g, "")}`}>Call {phone}</a>
-              </li>
-            )}
             {whatsapp && (
               <li>
-                <a href={whatsappLink(whatsapp)}>WhatsApp us</a>
+                <a href={whatsappLink(whatsapp)}>
+                  <Icon name="whatsapp" size={18} /> WhatsApp us
+                </a>
               </li>
             )}
             {email && (
@@ -35,13 +64,29 @@ export function SiteFooter() {
                 <a href={`mailto:${email}`}>{email}</a>
               </li>
             )}
+          </ul>
+        </div>
+
+        <nav aria-label="Footer">
+          <h2 className={styles.footerHeading}>Explore</h2>
+          <ul className={styles.footerList}>
+            <li>
+              <Link href="/book">Book an appointment</Link>
+            </li>
+            {NAV_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href}>{l.label}</Link>
+              </li>
+            ))}
             <li>
               <Link href="/privacy">Privacy notice</Link>
             </li>
           </ul>
         </nav>
-        <p className={`muted ${styles.copy}`}>
-          © {new Date().getFullYear()} {business.name}
+      </div>
+      <div className="wrap">
+        <p className={styles.copy}>
+          © {new Date().getFullYear()} {fullName}, Centurion
         </p>
       </div>
     </footer>

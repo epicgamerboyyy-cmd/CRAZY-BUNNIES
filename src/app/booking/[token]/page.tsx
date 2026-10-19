@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { business } from "@/config/business";
+import { business, fullName, getStaff } from "@/config/business";
 import { canCustomerCancel, getBookingByToken, hasEnded } from "@/lib/bookings";
-import { whatsappLink } from "@/lib/contact";
+import { directionsUrl, telLink, whatsappLink } from "@/lib/contact";
 import { googleCalendarUrl } from "@/lib/ics";
 import { formatDuration, makeFormatters } from "@/lib/time";
+import { Icon } from "@/components/Icon";
+import { Portrait } from "@/components/Portrait";
 import { CancelForm } from "./CancelForm";
 import { PrintButton } from "./PrintButton";
 import { customerEvent } from "./event";
@@ -30,22 +32,20 @@ export default async function ManageBookingPage({
   const past = hasEnded(booking);
   const canCancel = canCustomerCancel(booking);
   const when = `${fmt.dateLong(booking.startsAt)} at ${fmt.time(booking.startsAt)}`;
-  const { phone, whatsapp, email } = business.contact;
-  const hasContact = !!(phone || whatsapp || email);
+  const staff = getStaff(booking.staffId);
+  const { phone, whatsapp } = business.contact;
+  const waMessage = `Hi ${business.name}, I've just booked online: ${booking.serviceName} with ${booking.staffName} on ${when} (ref ${booking.ref}). Name: ${booking.customerName}.`;
 
   return (
     <div className={`wrap ${styles.page}`}>
       {isNew && !cancelled ? (
         <div className={styles.head}>
           <p className={styles.check} aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="3">
-              <path d="M5 12.5l4.5 4.5L19 7.5" />
-            </svg>
+            <Icon name="check" size={30} />
           </p>
-          <h1>You&apos;re booked</h1>
+          <h1>You&apos;re booked!</h1>
           <p>
-            Save this page. It&apos;s your link to check or cancel the appointment, so bookmark it or add the appointment to your
-            calendar below.
+            We can&apos;t wait to see you. Save this page: it&apos;s your link to check or cancel the appointment.
           </p>
         </div>
       ) : (
@@ -53,30 +53,41 @@ export default async function ManageBookingPage({
           <h1>{cancelled ? "Appointment cancelled" : "Your appointment"}</h1>
           {cancelled && (
             <p>
-              This appointment was cancelled{booking.cancelledBy === "owner" ? ` by ${business.name}` : ""}.{" "}
-              <Link href={`/book?service=${booking.serviceId}`}>Book a new time</Link>.
+              This appointment was cancelled{booking.cancelledBy === "owner" ? " by the salon" : ""}.{" "}
+              <Link href={`/book?service=${booking.serviceId}&staff=${booking.staffId}`}>Book a new time</Link>.
             </p>
           )}
         </div>
       )}
 
       <section className={styles.ticket} aria-label="Booking details">
-        <p className={styles.when}>
-          <span className={styles.date}>{fmt.dateLong(booking.startsAt)}</span>
-          <span className={styles.time}>
+        <div className={styles.when}>
+          <p className={styles.date}>{fmt.dateLong(booking.startsAt)}</p>
+          <p className={styles.time}>
             {fmt.time(booking.startsAt)} to {fmt.time(booking.endsAt)}
-          </span>
-        </p>
+          </p>
+        </div>
+        <div className={styles.with}>
+          {staff && <Portrait staff={staff} sizes="4.5rem" className={styles.withFace} />}
+          <p>
+            <span className="muted">With</span>
+            <strong>{booking.staffName}</strong>
+            {staff && <span className="muted">{staff.role}</span>}
+          </p>
+        </div>
         <dl className={styles.details}>
           <div>
             <dt>Service</dt>
             <dd>
-              {booking.serviceName} ({formatDuration(booking.durationMinutes)})
+              {booking.serviceName} (about {formatDuration(booking.durationMinutes)})
             </dd>
           </div>
           <div>
-            <dt>Name</dt>
-            <dd>{booking.customerName}</dd>
+            <dt>Booked by</dt>
+            <dd>
+              {booking.customerName}
+              {booking.clientType && <span className="muted"> for {booking.clientType === "child" ? "a child" : "an adult"}</span>}
+            </dd>
           </div>
           <div>
             <dt>Reference</dt>
@@ -92,33 +103,33 @@ export default async function ManageBookingPage({
           </div>
           <div>
             <dt>Payment</dt>
-            <dd>In person, at your appointment</dd>
+            <dd>At the salon, on the day</dd>
           </div>
-          {business.address && (
-            <div>
-              <dt>Where</dt>
-              <dd>
-                {business.address.lines.join(", ")}
-                {business.address.mapUrl && (
-                  <>
-                    {" "}
-                    <a href={business.address.mapUrl}>Open in maps</a>
-                  </>
-                )}
-              </dd>
-            </div>
-          )}
+          <div>
+            <dt>Where</dt>
+            <dd>
+              {fullName}, {business.address.lines[0]}{" "}
+              <a href={directionsUrl()} target="_blank" rel="noopener noreferrer">
+                Directions<span className="sr-only"> (opens Google Maps)</span>
+              </a>
+            </dd>
+          </div>
         </dl>
       </section>
 
       {!cancelled && !past && (
-        <section className={`${styles.block} no-print`} aria-labelledby="add-cal">
-          <h2 id="add-cal" className={styles.blockTitle}>
-            Add to your calendar
+        <section className={`${styles.block} no-print`} aria-labelledby="next">
+          <h2 id="next" className={styles.blockTitle}>
+            Keep it handy
           </h2>
           <div className={styles.actions}>
+            {whatsapp && (
+              <a className="btn btn-primary" href={whatsappLink(whatsapp, waMessage)}>
+                <Icon name="whatsapp" size={18} /> Send to the salon on WhatsApp
+              </a>
+            )}
             <a className="btn btn-secondary" href={`/booking/${token}/calendar.ics`}>
-              Apple or Outlook (.ics)
+              <Icon name="calendar" size={18} /> Apple or Outlook calendar
             </a>
             <a className="btn btn-secondary" href={googleCalendarUrl(customerEvent(booking))} target="_blank" rel="noopener noreferrer">
               Google Calendar<span className="sr-only"> (opens in a new tab)</span>
@@ -139,30 +150,22 @@ export default async function ManageBookingPage({
               <CancelForm token={token} when={when} />
             </>
           ) : (
-            <p>
-              It&apos;s less than {Math.round(business.booking.cancelCutoffMinutes / 60)} hours to your appointment, so it can&apos;t be
-              cancelled online.{" "}
-              {hasContact ? "Please contact us directly:" : "Please contact us directly."}
-            </p>
-          )}
-          {hasContact && !canCancel && (
-            <ul className={styles.contactList}>
-              {phone && (
-                <li>
-                  <a href={`tel:${phone.replace(/\s/g, "")}`}>Call {phone}</a>
-                </li>
-              )}
-              {whatsapp && (
-                <li>
-                  <a href={whatsappLink(whatsapp, `Hi, about my booking ${booking.ref}`)}>WhatsApp us</a>
-                </li>
-              )}
-              {email && (
-                <li>
-                  <a href={`mailto:${email}?subject=${encodeURIComponent(`Booking ${booking.ref}`)}`}>{email}</a>
-                </li>
-              )}
-            </ul>
+            <>
+              <p>
+                It&apos;s less than {Math.round(business.booking.cancelCutoffMinutes / 60)} hours to your appointment, so it can&apos;t be
+                cancelled online. Please contact the salon directly.
+              </p>
+              <div className={styles.actions}>
+                <a className="btn btn-secondary" href={telLink(phone)}>
+                  <Icon name="phone" size={18} /> Call {phone}
+                </a>
+                {whatsapp && (
+                  <a className="btn btn-secondary" href={whatsappLink(whatsapp, `Hi, about my booking ${booking.ref}`)}>
+                    <Icon name="whatsapp" size={18} /> WhatsApp
+                  </a>
+                )}
+              </div>
+            </>
           )}
         </section>
       )}

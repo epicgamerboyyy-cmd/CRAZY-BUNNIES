@@ -1,0 +1,186 @@
+.head {
+  padding-block: var(--s7) var(--s6);
+  background: radial-gradient(50rem 24rem at 90% 0%, var(--berry-soft), transparent 70%);
+}
+
+.head :global(.wrap) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+}
+
+.head h1 {
+  font-size: var(--t-hero);
+  color: var(--berry);
+  font-weight: 700;
+}
+
+.lede {
+  font-size: var(--t-md);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-bottom: var(--s5);
+}
+
+.filter {
+  min-height: 2.75rem;
+  padding: 0 var(--s4);
+  border-radius: 999px;
+  border: 1.5px solid var(--control-border);
+  background: var(--card);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filter:hover {
+  border-color: var(--berry);
+}
+
+.filter[aria-pressed="true"] {
+  background: var(--berry);
+  border-color: var(--berry);
+  color: #fff;
+}
+
+/* Masonry-style columns keep each photo's own shape */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2 10rem;
+  column-gap: var(--s3);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    columns: 3 14rem;
+    column-gap: var(--s4);
+  }
+}
+
+.tile {
+  break-inside: avoid;
+  margin-bottom: var(--s3);
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: zoom-in;
+  background: var(--sand);
+}
+
+.thumb:hover .cover {
+  transform: scale(1.03);
+}
+
+.cover {
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover {
+    transition: none;
+  }
+}
+
+.empty {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--s2);
+  width: 100%;
+  padding: var(--s4);
+  border-radius: var(--radius-lg);
+  color: var(--berry);
+  font-weight: 800;
+  font-size: var(--t-sm);
+  text-align: center;
+  background-image: radial-gradient(color-mix(in srgb, var(--berry) 14%, transparent) 1.2px, transparent 1.4px) !important;
+  background-size: 16px 16px !important;
+}
+
+.follow {
+  margin-top: var(--s7);
+  padding: var(--s6) var(--s5);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+  justify-items: center;
+  text-align: center;
+}
+
+.followBtns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s3);
+  margin-top: var(--s2);
+}
+
+/* Viewer */
+.viewer {
+  width: min(64rem, 100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  padding: var(--s4);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.viewer::backdrop {
+  background: rgb(20 8 16 / 0.82);
+}
+
+.figure {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+}
+
+.viewerImg {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 12rem);
+}
+
+.contain {
+  object-fit: contain;
+}
+
+.figure figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  justify-content: space-between;
+}
+
+.by,
+.count {
+  color: #d9c7d1;
+}
+
+.viewerControls {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s4);
+}
+
+/* The Instagram handle is one long word; let it break at large text sizes */
+.followBtns :global(.btn) {
+  overflow-wrap: anywhere;
+}
