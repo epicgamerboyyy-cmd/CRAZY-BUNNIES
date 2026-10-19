@@ -5,6 +5,7 @@
 
 .heroGrid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s7);
   align-items: end;
 }
@@ -103,6 +104,9 @@
 .boardMore {
   color: #b9cbff;
   justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
 }
 
 .boardMore:focus-visible {

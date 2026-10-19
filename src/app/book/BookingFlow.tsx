@@ -28,6 +28,7 @@ interface Props {
 }
 
 const WEEK = 7;
+const FIELD_LABELS = { customerName: "Name", phone: "Phone number", email: "Email", notes: "Notes" } as const;
 
 export function BookingFlow(props: Props) {
   const { services, today, lastDate, locale, timezone } = props;
@@ -292,6 +293,22 @@ export function BookingFlow(props: Props) {
           {state.formError && (
             <div className="notice notice-error" role="alert">
               <strong>{state.formError}</strong>
+            </div>
+          )}
+          {Object.keys(err).length > 0 && (
+            <div className="notice notice-error" role="alert">
+              <strong>
+                {Object.keys(err).length === 1 ? "One detail needs fixing:" : `${Object.keys(err).length} details need fixing:`}
+              </strong>
+              <ul className={styles.errorList}>
+                {(Object.keys(FIELD_LABELS) as (keyof typeof FIELD_LABELS)[])
+                  .filter((k) => err[k])
+                  .map((k) => (
+                    <li key={k}>
+                      <a href={`#${k}`}>{FIELD_LABELS[k]}</a>
+                    </li>
+                  ))}
+              </ul>
             </div>
           )}
 

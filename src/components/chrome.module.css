@@ -1,18 +1,27 @@
 .header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 20;
   background: color-mix(in srgb, var(--paper) 94%, transparent);
   border-bottom: 1px solid var(--rule);
   backdrop-filter: saturate(1.2) blur(6px);
 }
 
+/* Sticky only when the header fits on one row; on tiny or zoomed screens it scrolls away. */
+@media (min-width: 30rem) {
+  .header {
+    position: sticky;
+    top: 0;
+  }
+}
+
 .headerInner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--s4);
+  gap: 0 var(--s4);
   min-height: var(--header-h);
+  padding-block: var(--s1);
 }
 
 .brand {
@@ -23,18 +32,25 @@
   color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
 }
 
 .nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--s2);
+  gap: var(--s1) var(--s2);
 }
 
 .navLink {
   color: var(--ink);
   text-decoration: none;
-  padding: var(--s2);
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--s2);
   border-radius: var(--radius);
 }
 
@@ -44,7 +60,7 @@
 
 @media (max-width: 400px) {
   .navLink {
-    padding: var(--s2) var(--s1);
+    padding: 0 var(--s1);
     font-size: var(--t-sm);
   }
   .brand {

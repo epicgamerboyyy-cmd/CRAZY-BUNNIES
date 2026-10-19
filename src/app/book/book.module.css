@@ -1,5 +1,6 @@
 .layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s6);
   padding-block: var(--s6) var(--s7);
 }
@@ -14,6 +15,7 @@
 
 .main {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s5);
   min-width: 0;
 }
@@ -76,13 +78,13 @@
   align-items: flex-start;
   padding: var(--s3) var(--s4);
   background: var(--surface);
-  border: 1.5px solid var(--rule);
+  border: 1.5px solid var(--control-border);
   border-radius: var(--radius);
   cursor: pointer;
 }
 
 .serviceOption:hover {
-  border-color: var(--rule-strong);
+  border-color: var(--ink);
 }
 
 .serviceOption:has(input:checked) {
@@ -140,14 +142,9 @@
 
 .days {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Sized in rem so bigger text means fewer, wider columns rather than clipped labels */
+  grid-template-columns: repeat(auto-fit, minmax(4.25rem, 1fr));
   gap: var(--s2);
-}
-
-@media (min-width: 30rem) {
-  .days {
-    grid-template-columns: repeat(7, 1fr);
-  }
 }
 
 .day {
@@ -155,7 +152,7 @@
   justify-items: center;
   gap: 0;
   padding: var(--s2) var(--s1);
-  border: 1.5px solid var(--rule);
+  border: 1.5px solid var(--control-border);
   border-radius: var(--radius);
   background: var(--surface);
   cursor: pointer;
@@ -169,6 +166,7 @@
 .day:disabled {
   cursor: default;
   background: transparent;
+  border-color: var(--rule);
   color: var(--muted);
 }
 
@@ -194,9 +192,10 @@
 }
 
 .dayStatus {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   margin-top: var(--s1);
-  white-space: nowrap;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .days[aria-busy="true"] .day {
@@ -262,6 +261,7 @@
 /* Form */
 .form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s4);
   max-width: 34rem;
 }
@@ -317,4 +317,9 @@
 .summaryList dd {
   margin: 0;
   font-weight: 700;
+}
+
+.errorList {
+  margin: var(--s1) 0 0;
+  padding-left: 1.2rem;
 }
