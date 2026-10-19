@@ -118,7 +118,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <label htmlFor="jump" className="sr-only">
                 Go to date
               </label>
-              <input id="jump" type="date" name="date" defaultValue={date} className="input" />
+              <input key={date} id="jump" type="date" name="date" defaultValue={date} className="input" />
               <button type="submit" className="btn btn-secondary btn-small">
                 Go
               </button>
@@ -175,7 +175,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <section aria-labelledby="block-title" className={styles.section}>
         <h2 id="block-title">Block time off</h2>
         <p className="muted">Blocked time can&apos;t be booked online. Existing bookings stay as they are.</p>
-        <BlockForm defaultDate={date} />
+        <BlockForm key={date} defaultDate={date} />
 
         {blocks.length > 0 && (
           <>
