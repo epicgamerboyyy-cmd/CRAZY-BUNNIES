@@ -1,0 +1,275 @@
+.page {
+  padding-block: var(--s6) var(--s7);
+  display: grid;
+  gap: var(--s5);
+}
+
+.page h1 {
+  font-size: var(--t-xl);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.section {
+  display: grid;
+  gap: var(--s4);
+  padding-top: var(--s5);
+  border-top: 2px solid var(--ink);
+}
+
+.subhead {
+  margin-top: var(--s4);
+}
+
+/* Week strip */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(4.5rem, 1fr));
+  gap: var(--s2);
+  overflow-x: auto;
+  padding: 4px;
+  margin: -4px;
+}
+
+.stripDay {
+  display: grid;
+  justify-items: center;
+  padding: var(--s2);
+  border: 1.5px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--t-sm);
+}
+
+.stripDay strong {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  line-height: 1.1;
+}
+
+.stripDay:hover {
+  border-color: var(--ink);
+  text-decoration: none;
+}
+
+.stripDay[aria-current] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.stripCount {
+  white-space: nowrap;
+}
+
+/* Day */
+.dayHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.dayNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+}
+
+.jump {
+  display: flex;
+  gap: var(--s2);
+}
+
+.jump .input {
+  min-height: 2.25rem;
+  width: auto;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s2);
+}
+
+.row {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s4);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--ok);
+  border-radius: var(--radius);
+}
+
+.row[data-status="cancelled"] {
+  border-left-color: var(--error);
+  opacity: 0.75;
+}
+
+.row[data-status="completed"] {
+  border-left-color: var(--rule-strong);
+}
+
+.row[data-status="no_show"] {
+  border-left-color: var(--warn);
+}
+
+@media (min-width: 48rem) {
+  .row {
+    grid-template-columns: 6rem 1fr auto;
+    align-items: start;
+  }
+}
+
+.rowTime {
+  display: grid;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowTime strong {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  line-height: 1.1;
+}
+
+.rowBody {
+  display: grid;
+  gap: var(--s1);
+  min-width: 0;
+}
+
+.rowName {
+  font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+}
+
+.rowMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+  overflow-wrap: anywhere;
+}
+
+.notes {
+  background: var(--paper);
+  padding: var(--s2) var(--s3);
+  border-radius: var(--radius);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rowActions {
+  display: grid;
+  gap: var(--s2);
+  justify-items: start;
+}
+
+@media (min-width: 48rem) {
+  .rowActions {
+    justify-items: end;
+  }
+}
+
+.actionRow,
+.confirmInline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+}
+
+/* Blocks */
+.blockForm {
+  display: grid;
+  gap: var(--s4);
+  max-width: 28rem;
+}
+
+.timePair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s3);
+}
+
+.check {
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+  font-weight: 700;
+}
+
+.check input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--action);
+}
+
+.formStatus {
+  display: grid;
+  gap: var(--s2);
+}
+
+.formStatus:empty {
+  display: none;
+}
+
+.blocks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--s2);
+}
+
+.blocks li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+/* Login */
+.login {
+  max-width: 26rem;
+  padding-block: var(--s8);
+  display: grid;
+  gap: var(--s5);
+}
+
+.login h1 {
+  font-size: var(--t-xl);
+}
+
+.loginForm {
+  display: grid;
+  gap: var(--s4);
+}
+
+.passwordRow {
+  display: flex;
+  gap: var(--s2);
+}
+
+.passwordRow .btn {
+  min-height: 2.875rem;
+}

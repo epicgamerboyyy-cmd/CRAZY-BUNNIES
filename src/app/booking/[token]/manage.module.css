@@ -1,0 +1,138 @@
+.page {
+  max-width: 44rem;
+  padding-block: var(--s7);
+  display: grid;
+  gap: var(--s6);
+}
+
+.head {
+  display: grid;
+  gap: var(--s3);
+}
+
+.head h1 {
+  font-size: var(--t-xl);
+}
+
+.check {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ok);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .check {
+    animation: pop 320ms cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* The one bold element here: a ticket-like card with a perforated edge. */
+.ticket {
+  background: var(--surface);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.when {
+  display: grid;
+  gap: var(--s1);
+  padding: var(--s5);
+  background: var(--ink);
+  color: var(--paper);
+  max-width: none;
+}
+
+.date {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.time {
+  font-size: var(--t-md);
+  font-variant-numeric: tabular-nums;
+}
+
+.details {
+  margin: 0;
+  padding: var(--s5);
+  display: grid;
+  gap: var(--s3);
+  border-top: 2px dashed var(--rule-strong);
+}
+
+@media (min-width: 36rem) {
+  .details {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.details dt {
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+.details dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ref {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  font-size: var(--t-md);
+}
+
+.block {
+  display: grid;
+  gap: var(--s3);
+}
+
+.blockTitle {
+  font-size: var(--t-md);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.confirmBox {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s4);
+  border: 1.5px solid var(--error);
+  border-radius: var(--radius);
+  background: var(--error-soft);
+}
+
+.contactList {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+@media print {
+  .page {
+    padding-block: 0;
+  }
+  .when {
+    background: #fff;
+    color: #000;
+    border-bottom: 1px solid #000;
+  }
+}

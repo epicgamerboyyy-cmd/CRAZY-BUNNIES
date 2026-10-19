@@ -1,0 +1,102 @@
+import { index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+
+export const BOOKING_STATUSES = ["confirmed", "completed", "no_show", "cancelled"] as const;
+export type BookingStatus = (typeof BOOKING_STATUSES)[number];
+
+export const bookings = pgTable(
+  "bookings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ref: text("ref").notNull().unique(),
+    manageToken: text("manage_token").notNull().unique(),
+    idempotencyKey: text("idempotency_key").notNull().unique(),
+    serviceId: text("service_id").notNull(),
+    serviceName: text("service_name").notNull(),
+    durationMinutes: integer("duration_minutes").notNull(),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    customerName: text("customer_name").notNull(),
+    phone: text("phone").notNull(),
+    email: text("email"),
+    notes: text("notes"),
+    status: text("status").$type<BookingStatus>().notNull().default("confirmed"),
+    cancelledBy: text("cancelled_by").$type<"customer" | "owner">(),
+    gcalEventId: text("gcal_event_id"),
+    gcalError: text("gcal_error"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("bookings_starts_at_idx").on(t.startsAt)],
+);
+
+export const blocks = pgTable(
+  "blocks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    reason: text("reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("blocks_starts_at_idx").on(t.startsAt)],
+);
+
+export const authAttempts = pgTable("auth_attempts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  key: text("key").notNull(),
+  at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Booking = typeof bookings.$inferSelect;
+export type Block = typeof blocks.$inferSelect;
+
+/**
+ * Applied on first connection. Idempotent, so it's safe on every cold start.
+ * The exclusion constraint is what actually stops double bookings: two active
+ * bookings can never overlap, even if two requests race.
+ */
+export const SCHEMA_SQL = [
+  `CREATE TABLE IF NOT EXISTS bookings (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    ref text NOT NULL UNIQUE,
+    manage_token text NOT NULL UNIQUE,
+    idempotency_key text NOT NULL UNIQUE,
+    service_id text NOT NULL,
+    service_name text NOT NULL,
+    duration_minutes integer NOT NULL,
+    starts_at timestamptz NOT NULL,
+    ends_at timestamptz NOT NULL,
+    customer_name text NOT NULL,
+    phone text NOT NULL,
+    email text,
+    notes text,
+    status text NOT NULL DEFAULT 'confirmed',
+    cancelled_by text,
+    gcal_event_id text,
+    gcal_error text,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    CHECK (ends_at > starts_at),
+    CHECK (status IN ('confirmed','completed','no_show','cancelled'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS bookings_starts_at_idx ON bookings (starts_at)`,
+  `DO $$ BEGIN
+    ALTER TABLE bookings ADD CONSTRAINT bookings_no_overlap
+      EXCLUDE USING gist (tstzrange(starts_at, ends_at) WITH &&) WHERE (status <> 'cancelled');
+  EXCEPTION WHEN duplicate_object OR duplicate_table THEN NULL; END $$`,
+  `CREATE TABLE IF NOT EXISTS blocks (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    starts_at timestamptz NOT NULL,
+    ends_at timestamptz NOT NULL,
+    reason text,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    CHECK (ends_at > starts_at)
+  )`,
+  `CREATE INDEX IF NOT EXISTS blocks_starts_at_idx ON blocks (starts_at)`,
+  `CREATE TABLE IF NOT EXISTS auth_attempts (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    key text NOT NULL,
+    at timestamptz NOT NULL DEFAULT now()
+  )`,
+  `CREATE INDEX IF NOT EXISTS auth_attempts_key_at_idx ON auth_attempts (key, at)`,
+];

@@ -1,0 +1,15 @@
+.page {
+  max-width: 46rem;
+  padding-block: var(--s7);
+  display: grid;
+  gap: var(--s4);
+}
+
+.page h1 {
+  font-size: var(--t-xl);
+}
+
+.page h2 {
+  font-size: var(--t-md);
+  margin-top: var(--s4);
+}
