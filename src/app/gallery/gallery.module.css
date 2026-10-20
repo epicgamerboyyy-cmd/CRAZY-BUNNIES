@@ -29,7 +29,7 @@
 .filter {
   min-height: 2.75rem;
   padding: 0 var(--s4);
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--control-border);
   background: var(--card);
   font-weight: 700;

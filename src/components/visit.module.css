@@ -24,7 +24,7 @@
   gap: var(--s2);
   justify-self: start;
   padding: 0.35rem 0.9rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   font-weight: 700;
   font-size: var(--t-sm);
 }
@@ -129,7 +129,7 @@
 .todayTag {
   margin-left: var(--s2);
   padding: 0 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--mint-soft);
   color: var(--mint-ink);
   font-size: var(--t-xs);

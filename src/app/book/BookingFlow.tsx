@@ -400,7 +400,8 @@ export function BookingFlow(props: Props) {
                         .
                       </p>
                     ) : activeDay ? (
-                      <div className={styles.times}>
+                      // Keyed by day so switching days replays the short entrance
+                      <div key={activeDay.date} className={`enter ${styles.times}`}>
                         <p className="sr-only">Times for {fmt.calLong(activeDay.date)}</p>
                         {groups.map((g) => (
                           <fieldset key={g.label} className={styles.timeGroup}>
@@ -531,8 +532,11 @@ export function BookingFlow(props: Props) {
             </p>
 
             <button type="submit" className={`btn btn-primary ${styles.submit}`} disabled={!ready || pending}>
-              {pending
-                ? "Booking…"
+              {pending ? (
+                <>
+                  <span className="spinner" aria-hidden="true" /> Booking…
+                </>
+              )
                 : ready
                   ? `Book ${fmt.dayShort(new Date(chosenSlot!))} ${fmt.dayNum(new Date(chosenSlot!))} ${fmt.month(new Date(chosenSlot!))} at ${fmt.time(new Date(chosenSlot!))}`
                   : "Choose a time to continue"}

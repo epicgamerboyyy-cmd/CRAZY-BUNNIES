@@ -9,11 +9,17 @@ const PATHS: Record<IconName | UiIcon, React.ReactNode> = {
       <path d="M8 3h9" />
     </>
   ),
+  // Two groups so the blades can close around the pivot (see .snip-card in globals.css)
   scissors: (
     <>
-      <circle cx="6" cy="7" r="2.5" />
-      <circle cx="6" cy="17" r="2.5" />
-      <path d="M8.2 8.2 20 18M8.2 15.8 20 6" />
+      <g className="blade blade-a">
+        <circle cx="6" cy="7" r="2.5" />
+        <path d="M8.2 8.2 20 18" />
+      </g>
+      <g className="blade blade-b">
+        <circle cx="6" cy="17" r="2.5" />
+        <path d="M8.2 15.8 20 6" />
+      </g>
     </>
   ),
   bunny: (
@@ -151,6 +157,7 @@ export function Icon({
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
+      data-icon={name}
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}

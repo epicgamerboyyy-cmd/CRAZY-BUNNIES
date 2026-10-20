@@ -301,7 +301,7 @@
 .clientTag {
   margin-left: var(--s2);
   padding: 0 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--sand);
   font-size: var(--t-xs);
   font-weight: 700;
@@ -312,7 +312,7 @@
   display: flex;
   gap: var(--s1);
   padding: 4px;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--glass-strong);
   border: 1px solid var(--glass-edge);
 }
@@ -323,7 +323,7 @@
   gap: var(--s2);
   min-height: 2.75rem;
   padding: 0 var(--s4);
-  border-radius: 999px;
+  border-radius: var(--radius);
   color: var(--ink);
   font-weight: 700;
   text-decoration: none;
@@ -368,7 +368,7 @@
   align-items: center;
   min-height: 2.75rem;
   padding: 0 var(--s4);
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--control-border);
   background: var(--field);
   color: var(--ink);
@@ -422,7 +422,7 @@
 .fbStatus {
   display: inline-block;
   padding: 0.1rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: var(--t-xs);
   font-weight: 700;
   border: 1px solid currentColor;

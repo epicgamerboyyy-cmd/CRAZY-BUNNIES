@@ -2,17 +2,10 @@
 .header {
   position: relative;
   z-index: 30;
-  background: rgb(251 247 241 / 0.92);
+  background: var(--cream);
   border-bottom: 1px solid var(--glass-line);
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .header {
-    background: rgb(251 247 241 / 0.6);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-  }
-}
 
 @media (min-width: 30rem) {
   .header {
@@ -84,7 +77,7 @@
   align-items: center;
   min-height: 2.75rem;
   padding: 0 var(--s3);
-  border-radius: 999px;
+  border-radius: var(--radius);
 }
 
 .navLink:hover {
@@ -110,7 +103,7 @@
   min-height: 2.75rem;
   padding: 0 var(--s4);
   border: 1.5px solid var(--control-border);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--glass-strong);
   color: var(--ink);
   font-weight: 700;
@@ -127,8 +120,7 @@
   right: var(--s3);
   top: calc(100% + var(--s2));
   border-radius: var(--radius-lg);
-  /* Nearly solid: a blur can't work inside the already-blurred header, and text behind a menu must never show through */
-  background: rgb(255 253 250 / 0.98);
+  background: var(--card);
   border: 1px solid var(--glass-edge);
   box-shadow: 0 24px 50px -20px rgb(92 19 56 / 0.45), 0 0 0 100vmax rgb(42 22 34 / 0.18);
 }
@@ -194,18 +186,10 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s2);
   padding: var(--s2) var(--s3) calc(var(--s2) + env(safe-area-inset-bottom, 0px));
-  background: rgb(251 247 241 / 0.92);
-  border-top: 1px solid var(--glass-edge);
-  box-shadow: 0 -12px 34px -18px rgb(92 19 56 / 0.4);
+  background: var(--cream);
+  border-top: 1px solid var(--rule);
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .actionBar {
-    background: rgb(251 247 241 / 0.62);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-  }
-}
 
 .actionBar :global(.btn) {
   flex-direction: column;

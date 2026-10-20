@@ -43,13 +43,16 @@ export default function ServicesPage() {
           const items = servicesIn(c.id);
           const team = business.staff.filter((s) => items.some((i) => staffDoesService(s, i)));
           return (
-            <section key={c.id} id={c.id} className={`card ${styles.category}`} aria-labelledby={`${c.id}-title`}>
+            <section key={c.id} id={c.id} className={`card snip-card ${styles.category}`} aria-labelledby={`${c.id}-title`}>
               <header className={styles.catHead}>
-                <span className={styles.catIcon}>
-                  <Icon name={c.icon} size={30} />
+                <span className={styles.catMark}>
+                  <span className={styles.catIcon}>
+                    <Icon name={c.icon} size={30} />
+                  </span>
+                  {c.id === "cuts" && <span className="barber-pole" aria-hidden="true" />}
                 </span>
                 <div className={styles.catText}>
-                  <h2 id={`${c.id}-title`}>{c.name}</h2>
+                  <h2 id={`${c.id}-title`} className="snip-title">{c.name}</h2>
                   <p className="muted">{c.blurb}</p>
                 </div>
                 {c.fromZar !== null && <span className="price-tag">From {formatZar(c.fromZar)}</span>}

@@ -12,6 +12,9 @@ import { StaffCard } from "@/components/StaffCard";
 import { VisitBlock } from "@/components/VisitBlock";
 import styles from "./home.module.css";
 
+/** The category that covers barber work (cuts, line-ups, edge-ups) gets the barber-pole accent. */
+const BARBER_CATEGORY = "cuts";
+
 export default async function HomePage() {
   // "Open now" depends on the current time, so render per request.
   await connection();
@@ -105,14 +108,17 @@ export default async function HomePage() {
           </div>
           <ul className={styles.services}>
             {business.categories.map((c) => (
-              <li key={c.id} className={`card ${styles.service}`}>
+              <li key={c.id} className={`card snip-card ${styles.service}`}>
                 <div className={styles.serviceTop}>
-                  <span className={styles.serviceIcon}>
-                    <Icon name={c.icon} size={26} />
+                  <span className={styles.serviceMark}>
+                    <span className={styles.serviceIcon}>
+                      <Icon name={c.icon} size={26} />
+                    </span>
+                    {c.id === BARBER_CATEGORY && <span className="barber-pole" aria-hidden="true" />}
                   </span>
                   {c.fromZar !== null && <span className="price-tag">From {formatZar(c.fromZar)}</span>}
                 </div>
-                <h3>{c.name}</h3>
+                <h3 className="snip-title">{c.name}</h3>
                 <p className="muted">{c.blurb}</p>
                 <ul className="chips" aria-label={`${c.name} includes`}>
                   {servicesIn(c.id).map((s) => (

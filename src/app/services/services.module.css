@@ -33,7 +33,7 @@
   gap: var(--s2);
   min-height: 2.75rem;
   padding: 0 var(--s4);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--card);
   border: 1.5px solid var(--control-border);
   color: var(--ink);
@@ -79,6 +79,13 @@
   .catHead :global(.price-tag) {
     grid-column: auto;
   }
+}
+
+.catMark {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  align-self: start;
 }
 
 .catIcon {

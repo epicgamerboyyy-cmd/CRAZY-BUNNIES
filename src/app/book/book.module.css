@@ -45,10 +45,8 @@
 }
 
 .step[data-disabled] {
-  box-shadow: none;
-  background: rgb(255 255 255 / 0.25);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background: transparent;
+  border-style: dashed;
 }
 
 .step[data-disabled] .stepTitle {
@@ -119,7 +117,7 @@
   gap: var(--s2);
   min-height: 3.25rem;
   border: 1.5px solid var(--control-border);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--field);
   font-weight: 700;
   cursor: pointer;
@@ -231,7 +229,7 @@
   gap: var(--s1);
   min-height: 2.75rem;
   padding: 0 var(--s3);
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--control-border);
   background: var(--card);
   font-weight: 700;
@@ -439,7 +437,7 @@
 .time {
   min-height: 2.75rem;
   border: 1.5px solid var(--mint-ink);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--card);
   color: var(--mint-ink);
   font-weight: 700;
@@ -548,4 +546,32 @@
 .summaryList dd {
   margin: 0;
   font-weight: 700;
+}
+
+/* Quick feedback as choices land and later steps unlock */
+@media (prefers-reduced-motion: no-preference) {
+  .step,
+  .stepTitle,
+  .stepNum {
+    transition: background-color var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out),
+      color var(--t-med) var(--ease-out);
+  }
+
+  .segment,
+  .staffOption,
+  .serviceOption,
+  .day,
+  .time,
+  .catFilter button {
+    transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out),
+      color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+  }
+
+  .segment:active,
+  .staffOption:active,
+  .serviceOption:active,
+  .day:active:not(:disabled),
+  .time:active {
+    transform: translateY(1px);
+  }
 }

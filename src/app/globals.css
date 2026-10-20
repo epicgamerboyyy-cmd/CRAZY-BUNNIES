@@ -1,8 +1,8 @@
 /*
  * Crazy Bunnies design system.
  * Brand colours come from the salon's existing site (berry + mint), tuned so every
- * text pair passes WCAG AA. Arch frames echo the salon interior. Surfaces are frosted
- * glass over soft brand-coloured light, with solid fallbacks.
+ * text pair passes WCAG AA. Arch frames echo the salon interior. Surfaces are solid
+ * cards on cream, separated by hairline rules rather than blur and shadow.
  */
 :root {
   --cream: #fbf7f1;
@@ -14,13 +14,11 @@
   --control-border: #8f7d86;
   --field: #fffdfa;
 
-  /* Glass */
-  --glass: rgb(255 255 255 / 0.58);
-  --glass-strong: rgb(255 255 255 / 0.76);
-  --glass-edge: rgb(255 255 255 / 0.75);
-  --glass-line: rgb(122 29 75 / 0.1);
-  --glass-blur: blur(18px) saturate(1.5);
-  --glass-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 12px 40px -16px rgb(92 19 56 / 0.28);
+  /* Surface aliases (the old glass names, now solid so existing components keep working) */
+  --glass: var(--card);
+  --glass-strong: var(--card);
+  --glass-edge: var(--rule);
+  --glass-line: var(--rule);
 
   /* Older names still used by the dashboard styles */
   --surface: var(--card);
@@ -71,10 +69,16 @@
   --s7: 3rem;
   --s8: 5rem;
 
-  --radius: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 14px;
   --arch: 999px 999px var(--radius-lg) var(--radius-lg);
-  --shadow: var(--glass-shadow);
+  --shadow: none;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --t-fast: 140ms;
+  --t-med: 220ms;
 
   --measure: 64ch;
   --page: 74rem;
@@ -125,20 +129,6 @@ body {
   padding-bottom: var(--actionbar-h);
 }
 
-/* Soft brand light behind everything, so the glass has something to frost */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(38rem 32rem at 92% 6%, rgb(249 219 230 / 0.95), transparent 70%),
-    radial-gradient(34rem 30rem at 4% 38%, rgb(205 236 223 / 0.9), transparent 70%),
-    radial-gradient(30rem 26rem at 78% 78%, rgb(251 231 194 / 0.75), transparent 70%),
-    radial-gradient(28rem 24rem at 18% 96%, rgb(247 230 238 / 0.9), transparent 70%),
-    var(--cream);
-}
 
 main {
   flex: 1;
@@ -292,16 +282,21 @@ code {
 .kicker {
   display: inline-flex;
   align-items: center;
-  gap: var(--s2);
+  gap: var(--s3);
   justify-self: start;
-  padding: 0.3rem 0.85rem;
-  border-radius: 999px;
-  background: var(--glass);
-  border: 1px solid var(--glass-edge);
   color: var(--mint-ink);
   font-weight: 700;
   font-size: var(--t-sm);
   letter-spacing: 0.01em;
+}
+
+/* A short mint rule leads into the label instead of a pill */
+.kicker::before {
+  content: "";
+  width: 1.5rem;
+  height: 2px;
+  background: currentColor;
+  flex: none;
 }
 
 /* Buttons */
@@ -313,7 +308,7 @@ code {
   min-height: 3rem;
   padding: 0 var(--s5);
   border: 2px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius);
   font-weight: 700;
   text-decoration: none;
   text-align: center;
@@ -321,14 +316,8 @@ code {
   max-width: 100%;
   overflow-wrap: break-word;
   cursor: pointer;
-  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease, color 140ms ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .btn:active:not([disabled]) {
-    transform: scale(0.97);
-  }
-}
 
 .btn:hover {
   text-decoration: none;
@@ -341,7 +330,6 @@ code {
 .btn-primary {
   background: var(--berry);
   color: #fff;
-  box-shadow: 0 8px 20px -10px rgb(122 29 75 / 0.7);
 }
 
 .btn-primary:hover {
@@ -435,7 +423,7 @@ code {
 .chip {
   display: inline-block;
   padding: 0.2rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--sand);
   font-size: var(--t-xs);
   font-weight: 700;
@@ -445,38 +433,19 @@ code {
 .price-tag {
   display: inline-block;
   padding: 0.2rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--blush);
   color: var(--berry);
   font-weight: 700;
   font-size: var(--t-sm);
 }
 
-/* Frosted glass panel. Falls back to near-solid white where blur isn't supported. */
+/* Card surface: solid, with a hairline edge. No blur, no shadow. */
 .card,
 .glass {
-  background: var(--glass-strong);
-  border: 1px solid var(--glass-edge);
+  background: var(--card);
+  border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
-  box-shadow: var(--glass-shadow);
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .card,
-  .glass {
-    background: var(--glass);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .card,
-  .glass {
-    background: var(--card) !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
 }
 
 .arch {
@@ -566,7 +535,7 @@ textarea.input {
 .status {
   display: inline-block;
   padding: 0.1rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: var(--t-xs);
   font-weight: 700;
   border: 1px solid currentColor;
@@ -589,6 +558,168 @@ textarea.input {
 .status-cancelled {
   color: var(--error);
   background: var(--error-soft);
+}
+
+/*
+ * Motion. Small and tied to an action: hover, focus, press, a step unlocking,
+ * a result arriving. Nothing loops on its own. With reduced motion on, decorative
+ * movement stops; state changes still show through colour, text and borders.
+ */
+
+/* Arrow nudge on anything that leads somewhere */
+svg[data-icon="arrow"] {
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+/* Pressed state: a firm 1px press rather than a bounce */
+.btn {
+  transition-property: background-color, border-color, color, transform;
+  transition-duration: var(--t-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Barber pole: berry, cream and mint stripes in a capped tube */
+.barber-pole {
+  display: block;
+  flex: none;
+  width: 0.7rem;
+  height: 2.6rem;
+  border-radius: 0.35rem;
+  border: 2px solid var(--ink);
+  border-block-width: 4px;
+  background-color: var(--cream);
+  /* Pattern repeats twice per tile along the 45deg line, so the tile wraps seamlessly */
+  background-image: linear-gradient(
+    45deg,
+    var(--berry) 0 12.5%,
+    var(--cream) 12.5% 25%,
+    var(--mint) 25% 37.5%,
+    var(--cream) 37.5% 50%,
+    var(--berry) 50% 62.5%,
+    var(--cream) 62.5% 75%,
+    var(--mint) 75% 87.5%,
+    var(--cream) 87.5% 100%
+  );
+  background-size: 22px 22px;
+}
+
+/* Snip line under a card title, drawn on hover or keyboard focus */
+.snip-title {
+  position: relative;
+  padding-bottom: var(--s2);
+}
+
+.snip-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 3rem;
+  height: 2px;
+  background: var(--berry);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* Spinner for in-flight submits; the button label says what's happening too */
+.spinner {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:hover > svg[data-icon="arrow"],
+  a:focus-visible > svg[data-icon="arrow"],
+  button:hover:not(:disabled) > svg[data-icon="arrow"],
+  button:focus-visible > svg[data-icon="arrow"] {
+    transform: translateX(4px);
+  }
+
+  .btn:active:not([disabled]) {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  .btn:active:not([disabled]) > svg[data-icon="arrow"] {
+    transform: translateX(7px);
+  }
+
+  .snip-title::after {
+    transition: transform var(--t-med) var(--ease-out);
+  }
+
+  .snip-card:hover .snip-title::after,
+  .snip-card:focus-within .snip-title::after {
+    transform: scaleX(1);
+  }
+
+  /* Scissors close once around the pivot as the line is "cut" */
+  .snip-card svg[data-icon="scissors"] .blade {
+    transform-box: view-box;
+    transform-origin: 14.1px 12px;
+  }
+
+  .snip-card:hover svg[data-icon="scissors"] .blade-a,
+  .snip-card:focus-within svg[data-icon="scissors"] .blade-a {
+    animation: snip-a 420ms var(--ease-out);
+  }
+
+  .snip-card:hover svg[data-icon="scissors"] .blade-b,
+  .snip-card:focus-within svg[data-icon="scissors"] .blade-b {
+    animation: snip-b 420ms var(--ease-out);
+  }
+
+  /* The pole only turns while someone is looking at that card */
+  .snip-card:hover .barber-pole,
+  .snip-card:focus-within .barber-pole {
+    animation: pole 3.2s linear infinite;
+  }
+
+  .spinner {
+    animation: spin 700ms linear infinite;
+  }
+
+  /* Results arrive with a short slide so they register, without hiding anything */
+  .notice[role="alert"],
+  .notice[role="status"],
+  .enter {
+    animation: enter var(--t-med) var(--ease-out);
+  }
+}
+
+@keyframes snip-a {
+  45% {
+    transform: rotate(9deg);
+  }
+}
+
+@keyframes snip-b {
+  45% {
+    transform: rotate(-9deg);
+  }
+}
+
+@keyframes pole {
+  to {
+    background-position: 0 22px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 @media print {

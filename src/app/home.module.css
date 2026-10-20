@@ -27,10 +27,6 @@
   align-items: center;
   gap: var(--s2);
   justify-self: start;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  background: var(--glass);
-  border: 1px solid var(--glass-edge);
   color: var(--mint-ink);
   font-weight: 700;
   font-size: var(--t-sm);
@@ -164,8 +160,7 @@
 
 /* Strip of everything we do */
 .strip {
-  background: rgb(108 197 166 / 0.85);
-  border-block: 1px solid rgb(255 255 255 / 0.5);
+  background: var(--mint);
 }
 
 .stripList {
@@ -184,14 +179,14 @@
   gap: var(--s2);
   min-height: 2.75rem;
   padding: 0 var(--s3);
-  border-radius: 999px;
+  border-radius: var(--radius);
   color: var(--ink);
   font-weight: 700;
   text-decoration: none;
 }
 
 .stripList a:hover {
-  background: rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.45);
 }
 
 .stripList a:focus-visible {
@@ -242,6 +237,12 @@
   gap: var(--s3);
 }
 
+.serviceMark {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
 .serviceIcon {
   display: grid;
   place-items: center;
@@ -263,7 +264,7 @@
 
 /* Team */
 .teamSection {
-  background: rgb(244 234 220 / 0.45);
+  background: var(--sand);
   border-block: 1px solid var(--glass-edge);
 }
 
@@ -327,7 +328,7 @@
 
 /* Gallery preview */
 .gallerySection {
-  background: rgb(247 230 238 / 0.5);
+  background: var(--berry-soft);
   border-block: 1px solid var(--glass-edge);
 }
 
