@@ -10,6 +10,7 @@ import { makeFormatters } from "@/lib/time";
 import { saveFeedbackNote, setFeedbackStatus } from "../actions";
 import { AdminNav } from "../AdminNav";
 import styles from "../admin.module.css";
+import { logError } from "@/lib/request";
 
 export const metadata: Metadata = { title: "Feedback", robots: { index: false, follow: false } };
 
@@ -41,7 +42,7 @@ export default async function FeedbackInbox({
   try {
     [items, newCount] = await Promise.all([listFeedback({ status, kind }), countNewFeedback()]);
   } catch (err) {
-    console.error("[admin feedback]", err);
+    logError("admin feedback", err);
     return (
       <div className={`wrap ${styles.page}`}>
         <h1>Feedback</h1>

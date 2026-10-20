@@ -39,7 +39,7 @@ Reviews and ratings are deliberately left off until there are real ones to show.
 1. Import this repo in Vercel.
 2. **Storage → add Neon Postgres** and connect it to the project. That sets `DATABASE_URL`. Tables are created automatically on first request.
 3. Add environment variables (see `.env.example`):
-   - `ADMIN_PASSWORD`: the owner's dashboard password. Make it long.
+   - `ADMIN_PASSWORD`: the owner's dashboard password. At least 12 characters, or the dashboard stays locked. Changing it signs out every device.
    - `SESSION_SECRET`: 32+ random characters. Generate with
      `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
    - `NEXT_PUBLIC_SITE_URL`: the real domain once you have one, e.g. `https://crazybunnies.co.za`
@@ -73,6 +73,15 @@ Without `DATABASE_URL`, it uses an embedded Postgres (PGlite) stored in `.data/`
 ```bash
 npm run check   # lint, typecheck, unit tests, production build
 ```
+
+## Security and client data
+
+- Booking links use 192-bit random codes, so one client can't find another's appointment.
+- The dashboard login is rate limited per device and across the whole site, and sessions are tied to the current password.
+- Bookings are limited per device (5 an hour, 10 a day) and per phone number (5 upcoming), with a hidden bot trap, so a script can't fill the diary.
+- Server logs never include names, phone numbers or emails.
+- Content Security Policy and HSTS are set in `next.config.ts`. Private booking pages send no referrer.
+- Names, phone numbers, emails and notes are wiped `dataRetentionMonths` (12) after the appointment or feedback, when the owner next opens the dashboard.
 
 ## Not included yet
 

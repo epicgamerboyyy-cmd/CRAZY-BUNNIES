@@ -3,6 +3,7 @@ import { getService, getStaff } from "@/config/business";
 import { DatabaseNotConfiguredError } from "@/db";
 import { ANY_STAFF, getAvailability } from "@/lib/bookings";
 import { isDateString } from "@/lib/time";
+import { logError } from "@/lib/request";
 
 export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
     const result = await getAvailability(serviceId, staffId, from, days);
     return NextResponse.json({ days: result }, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {
-    console.error("[availability]", err);
+    logError("availability", err);
     const message =
       err instanceof DatabaseNotConfiguredError
         ? "Online booking isn't switched on yet."

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { canCustomerCancel, getBookingByToken, setBookingStatus } from "@/lib/bookings";
+import { logError } from "@/lib/request";
 
 export interface CancelState {
   error?: string;
@@ -18,7 +19,7 @@ export async function cancelOwnBooking(_prev: CancelState, formData: FormData): 
   try {
     await setBookingStatus(booking.id, "cancelled", "customer");
   } catch (err) {
-    console.error("[booking] cancel failed", err);
+    logError("booking cancel", err);
     return { error: "The cancellation didn't go through. Try again in a moment." };
   }
   revalidatePath(`/booking/${token}`);

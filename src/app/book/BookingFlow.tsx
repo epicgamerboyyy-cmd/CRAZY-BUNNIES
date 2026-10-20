@@ -456,6 +456,11 @@ export function BookingFlow(props: Props) {
             <input type="hidden" name="clientType" value={clientType} />
             <input type="hidden" name="startsAt" value={chosenSlot ?? ""} />
             <input type="hidden" name="idempotencyKey" value={props.idempotencyKey} />
+            {/* Trap for bots: hidden from people and screen readers, so only scripts fill it */}
+            <div className={styles.trap} aria-hidden="true">
+              <label htmlFor="website">Leave this empty</label>
+              <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
 
             <div className={styles.twoCol}>
               <div className="field">

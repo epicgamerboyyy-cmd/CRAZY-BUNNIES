@@ -75,6 +75,8 @@ export interface Highlight {
 
 export const business = {
   isSample: true,
+  /** Months after an appointment (or feedback) before names, numbers and notes are wiped. Shown in the privacy notice. */
+  dataRetentionMonths: 12,
   name: "Crazy Bunnies",
   descriptor: "Family Salon",
   headline: ["Great hair.", "Every generation."],

@@ -1,8 +1,9 @@
 import "server-only";
-import { createHash, randomInt } from "node:crypto";
-import { and, count, desc, eq, gt } from "drizzle-orm";
-import { headers } from "next/headers";
+import { randomInt } from "node:crypto";
+import { and, count, desc, eq, gt, isNotNull, lt, or } from "drizzle-orm";
+import { business } from "@/config/business";
 import { getDb, schema } from "@/db";
+import { clientHash } from "@/lib/request";
 import type { Feedback, FeedbackKind, FeedbackStatus } from "@/db/schema";
 
 const { feedback } = schema;
@@ -11,14 +12,7 @@ const REF_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const newRef = () => `FB-${Array.from({ length: 6 }, () => REF_ALPHABET[randomInt(REF_ALPHABET.length)]).join("")}`;
 
 /** A salted hash of the visitor's IP. We never store the IP itself. */
-async function senderHash(): Promise<string> {
-  const h = await headers();
-  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
-  return createHash("sha256")
-    .update(`${process.env.SESSION_SECRET ?? "cb"}:feedback:${ip}`)
-    .digest("hex")
-    .slice(0, 32);
-}
+const senderHash = () => clientHash("feedback");
 
 export interface NewFeedback {
   kind: FeedbackKind;
@@ -79,4 +73,15 @@ export async function updateFeedback(id: string, patch: { status?: FeedbackStatu
     .update(feedback)
     .set({ ...patch, updatedAt: new Date() })
     .where(eq(feedback.id, id));
+}
+
+/** POPIA: after the retention period, drop who sent feedback and how to reach them. The message stays. */
+export async function removeExpiredFeedbackDetails(): Promise<void> {
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - business.dataRetentionMonths);
+  const db = await getDb();
+  await db
+    .update(feedback)
+    .set({ name: null, contact: null, updatedAt: new Date() })
+    .where(and(lt(feedback.createdAt, cutoff), or(isNotNull(feedback.name), isNotNull(feedback.contact))));
 }

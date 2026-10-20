@@ -51,7 +51,11 @@ export default function PrivacyPage() {
       </p>
 
       <h2>How long we keep it</h2>
-      <p>For as long as it&apos;s needed to run the business and keep reasonable records, after which it&apos;s deleted.</p>
+      <p>
+        Names, phone numbers, emails and notes are wiped automatically {business.dataRetentionMonths} months after your
+        appointment, or {business.dataRetentionMonths} months after you send feedback. What&apos;s left is an anonymous record
+        that the appointment happened, so the salon can see how busy it was.
+      </p>
 
       <h2>Your rights</h2>
       <p>

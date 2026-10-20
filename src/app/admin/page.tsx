@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { after } from "next/server";
 import { business, getStaff } from "@/config/business";
 import { DatabaseNotConfiguredError } from "@/db";
 import { requireAdmin } from "@/lib/auth";
@@ -9,17 +10,19 @@ import {
   listBookingsForDay,
   listUnsynced,
   listUpcomingBlocks,
+  removeExpiredBookingDetails,
   todayLocal,
   upcomingCounts,
 } from "@/lib/bookings";
 import { isCalendarConfigured } from "@/lib/gcal";
 import { addDays, isDateString, makeFormatters } from "@/lib/time";
-import { countNewFeedback } from "@/lib/feedback";
+import { countNewFeedback, removeExpiredFeedbackDetails } from "@/lib/feedback";
 import { deleteBlock, retryCalendarSync } from "./actions";
 import { AdminNav } from "./AdminNav";
 import { BlockForm } from "./BlockForm";
 import { BookingActions } from "./BookingActions";
 import styles from "./admin.module.css";
+import { logError } from "@/lib/request";
 
 export const metadata: Metadata = { title: "Bookings", robots: { index: false, follow: false } };
 
@@ -28,6 +31,14 @@ const STATUS_LABEL = { confirmed: "Confirmed", completed: "Done", no_show: "No-s
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ date?: string; staff?: string }> }) {
   await requireAdmin();
+  // Retention clean-up rides along with the owner's visits, after the page is sent.
+  after(async () => {
+    try {
+      await Promise.all([removeExpiredBookingDetails(), removeExpiredFeedbackDetails()]);
+    } catch (err) {
+      logError("retention", err);
+    }
+  });
   const { date: requested, staff: staffParam } = await searchParams;
   const staffFilter = staffParam && getStaff(staffParam) ? staffParam : undefined;
   const qs = (d: string) => `/admin?date=${d}${staffFilter ? `&staff=${staffFilter}` : ""}`;
@@ -45,7 +56,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     ]);
     data = { bookings, counts, blocks, unsynced, newFeedback };
   } catch (err) {
-    console.error("[admin]", err);
+    logError("admin", err);
     return (
       <div className={`wrap ${styles.page}`}>
         <h1>Bookings</h1>

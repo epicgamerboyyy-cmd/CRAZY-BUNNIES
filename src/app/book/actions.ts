@@ -3,7 +3,15 @@
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createBooking, syncBookingToCalendar } from "@/lib/bookings";
+import { createBooking, syncBookingToCalendar, upcomingBookingsForPhone } from "@/lib/bookings";
+import { hitsSince, recordHit } from "@/lib/rate-limit";
+import { clientHash, logError } from "@/lib/request";
+
+// Generous enough for a parent booking several kids, tight enough that a script can't fill the diary.
+const MAX_PER_DEVICE_HOUR = 5;
+const MAX_PER_DEVICE_DAY = 10;
+const MAX_UPCOMING_PER_PHONE = 5;
+const LIMIT_MESSAGE = "You've made several bookings already. To book more, please call or WhatsApp the salon.";
 
 export interface BookingFormState {
   formError?: string;
@@ -53,9 +61,21 @@ export async function submitBooking(_prev: BookingFormState, formData: FormData)
     return { values, fieldErrors };
   }
 
+  // Bots fill every field; people never see this one. Pretend it worked and save nothing.
+  if (String(formData.get("website") ?? "")) redirect("/book");
+
   const d = parsed.data;
   let token: string;
   try {
+    const deviceKey = `booking:${await clientHash("booking")}`;
+    if (
+      (await hitsSince(deviceKey, 60)) >= MAX_PER_DEVICE_HOUR ||
+      (await hitsSince(deviceKey, 24 * 60)) >= MAX_PER_DEVICE_DAY ||
+      (await upcomingBookingsForPhone(d.phone)) >= MAX_UPCOMING_PER_PHONE
+    ) {
+      return { values, formError: LIMIT_MESSAGE };
+    }
+
     const result = await createBooking({
       serviceId: d.serviceId,
       staffId: d.staffId,
@@ -76,10 +96,11 @@ export async function submitBooking(_prev: BookingFormState, formData: FormData)
     }
     const booking = result.booking;
     token = booking.manageToken;
+    await recordHit(deviceKey);
     // Calendar sync runs after the response so the customer isn't kept waiting on Google.
     after(() => syncBookingToCalendar(booking));
   } catch (err) {
-    console.error("[booking] create failed", err);
+    logError("booking create", err);
     return { values, formError: "The booking didn't go through. Check your connection and try again." };
   }
   redirect(`/booking/${token}?new=1`);

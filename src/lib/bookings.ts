@@ -1,6 +1,6 @@
 import "server-only";
 import { randomBytes, randomInt } from "node:crypto";
-import { and, asc, eq, gt, gte, isNull, lt, ne, or } from "drizzle-orm";
+import { and, asc, count, eq, gt, gte, isNull, lt, ne, or, sql } from "drizzle-orm";
 import {
   business,
   getService,
@@ -16,6 +16,7 @@ import type { Block, Booking, BookingStatus } from "@/db/schema";
 import { calendarBusy, createCalendarEvent, deleteCalendarEvent, isCalendarConfigured } from "@/lib/gcal";
 import { generateSlots, type Interval } from "@/lib/slots";
 import { addDays, localDate, makeFormatters, weekdayOf, zonedTimeToUtc } from "@/lib/time";
+import { logError } from "@/lib/request";
 
 const { bookings, blocks } = schema;
 const TZ = business.timezone;
@@ -65,7 +66,7 @@ async function busyBetween(from: number, to: number): Promise<StaffBusy[]> {
       .where(and(lt(blocks.startsAt, new Date(to)), gt(blocks.endsAt, new Date(from)))),
     calendarBusy(from, to).catch((err) => {
       // Keep taking bookings if Google is down, but leave a trace.
-      console.error("[gcal] free/busy lookup failed", err);
+      logError("gcal free/busy", err);
       return [] as Interval[];
     }),
   ]);
@@ -266,7 +267,7 @@ export async function syncBookingToCalendar(b: Booking): Promise<void> {
       await db.update(bookings).set({ gcalEventId: eventId, gcalError: null }).where(eq(bookings.id, b.id));
     }
   } catch (err) {
-    console.error("[gcal] create event failed", err);
+    logError("gcal create", err);
     const message = err instanceof Error ? err.message : "Unknown error";
     await db.update(bookings).set({ gcalError: message.slice(0, 300) }).where(eq(bookings.id, b.id));
   }
@@ -307,7 +308,7 @@ export async function setBookingStatus(id: string, status: BookingStatus, by: "c
       await deleteCalendarEvent(updated.gcalEventId);
       await db.update(bookings).set({ gcalEventId: null, gcalError: null }).where(eq(bookings.id, id));
     } catch (err) {
-      console.error("[gcal] delete event failed", err);
+      logError("gcal delete", err);
       await db.update(bookings).set({ gcalError: "Cancelled here, but the calendar event could not be removed." }).where(eq(bookings.id, id));
     }
   }
@@ -397,4 +398,38 @@ export async function bookingsOverlapping(startsAt: Date, endsAt: Date, staffId:
 
 export function describeSlot(b: Pick<Booking, "startsAt" | "endsAt">): string {
   return `${fmt.dateFull(b.startsAt)}, ${fmt.time(b.startsAt)} to ${fmt.time(b.endsAt)}`;
+}
+
+/** Upcoming confirmed bookings under this phone number, matched on the last 9 digits so 082… and +2782… agree. */
+export async function upcomingBookingsForPhone(phone: string): Promise<number> {
+  const digits = phone.replace(/\D/g, "").slice(-9);
+  const db = await getDb();
+  const [{ n } = { n: 0 }] = await db
+    .select({ n: count() })
+    .from(bookings)
+    .where(
+      and(
+        eq(bookings.status, "confirmed"),
+        gt(bookings.endsAt, new Date()),
+        sql`right(regexp_replace(${bookings.phone}, '[^0-9]', '', 'g'), 9) = ${digits}`,
+      ),
+    );
+  return Number(n);
+}
+
+/**
+ * POPIA: don't keep personal details longer than needed. Once an appointment is
+ * older than the retention period, the name, phone, email and notes are wiped.
+ * The appointment itself stays, so the owner's history and counts still work.
+ */
+export async function removeExpiredBookingDetails(): Promise<number> {
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - business.dataRetentionMonths);
+  const db = await getDb();
+  const wiped = await db
+    .update(bookings)
+    .set({ customerName: "Former client", phone: "", email: null, notes: null, updatedAt: new Date() })
+    .where(and(lt(bookings.endsAt, cutoff), ne(bookings.phone, "")))
+    .returning({ id: bookings.id });
+  return wiped.length;
 }

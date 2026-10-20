@@ -6,6 +6,7 @@ import { DatabaseNotConfiguredError } from "@/db";
 import { FEEDBACK_KINDS } from "@/db/schema";
 import { submitFeedback } from "@/lib/feedback";
 import { isDateString, localDate } from "@/lib/time";
+import { logError } from "@/lib/request";
 
 export type FeedbackField = "kind" | "message" | "visitDate" | "contact";
 
@@ -89,7 +90,7 @@ export async function sendFeedback(_prev: FeedbackFormState, formData: FormData)
     }
     return { ok: { ref: result.ref, wantsReply: d.wantsReply } };
   } catch (err) {
-    console.error("[feedback] save failed", err);
+    logError("feedback save", err);
     return {
       values,
       formError:
