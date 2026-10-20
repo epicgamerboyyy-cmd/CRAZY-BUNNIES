@@ -3,12 +3,12 @@ import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 
 /**
- * The visitor's IP. Vercel sets x-real-ip itself and overwrites x-forwarded-for,
- * so a client can't fake either there. Locally both may be missing.
+ * The visitor's IP. Vercel overwrites x-forwarded-for with the real client IP,
+ * so a visitor can't fake it there. Locally it may be missing.
  */
 export async function clientIp(): Promise<string> {
   const h = await headers();
-  return h.get("x-real-ip")?.trim() || h.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip")?.trim() || "unknown";
 }
 
 /** A salted hash of the visitor's IP, for rate limits. The IP itself is never stored. */
