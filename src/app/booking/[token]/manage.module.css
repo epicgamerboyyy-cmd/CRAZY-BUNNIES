@@ -12,9 +12,9 @@
 
 .head h1 {
   font-size: var(--t-hero);
-  font-weight: 520;
+  font-weight: 440;
   letter-spacing: -0.035em;
-  color: var(--berry);
+  color: var(--pine);
 }
 
 .check {
@@ -50,8 +50,8 @@
   gap: var(--s1);
   padding: var(--s5);
   background:
-    radial-gradient(24rem 10rem at 100% 0%, rgb(255 143 176 / 0.35), transparent 70%),
-    var(--berry);
+    radial-gradient(24rem 10rem at 100% 0%, rgb(149 213 184 / 0.3), transparent 70%),
+    var(--pine);
   color: var(--cream);
 }
 
@@ -78,7 +78,7 @@
   gap: var(--s4);
   align-items: center;
   padding: var(--s4) var(--s5);
-  background: rgb(247 230 238 / 0.6);
+  background: rgb(227 243 235 / 0.6);
 }
 
 .with p {
@@ -124,7 +124,7 @@
   font-family: var(--font-display);
   letter-spacing: 0.05em;
   font-size: var(--t-md);
-  color: var(--berry);
+  color: var(--pine);
 }
 
 .block {

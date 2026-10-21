@@ -10,8 +10,8 @@
 
 .head h1 {
   font-size: var(--t-hero);
-  color: var(--berry);
-  font-weight: 520;
+  color: var(--pine);
+  font-weight: 440;
   letter-spacing: -0.035em;
 }
 
@@ -37,12 +37,12 @@
 }
 
 .filter:hover {
-  border-color: var(--berry);
+  border-color: var(--pine);
 }
 
 .filter[aria-pressed="true"] {
-  background: var(--berry);
-  border-color: var(--berry);
+  background: var(--pine);
+  border-color: var(--pine);
   color: #fff;
 }
 
@@ -102,11 +102,11 @@
   width: 100%;
   padding: var(--s4);
   border-radius: var(--radius-lg);
-  color: var(--berry);
+  color: var(--pine);
   font-weight: 700;
   font-size: var(--t-sm);
   text-align: center;
-  background-image: radial-gradient(color-mix(in srgb, var(--berry) 14%, transparent) 1.2px, transparent 1.4px) !important;
+  background-image: radial-gradient(color-mix(in srgb, var(--pine) 14%, transparent) 1.2px, transparent 1.4px) !important;
   background-size: 16px 16px !important;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .viewer::backdrop {
-  background: rgb(20 8 16 / 0.82);
+  background: rgb(8 26 19 / 0.86);
 }
 
 .figure {
@@ -169,7 +169,7 @@
 
 .by,
 .count {
-  color: #d9c7d1;
+  color: var(--on-dark-muted);
 }
 
 .viewerControls {

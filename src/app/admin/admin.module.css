@@ -334,7 +334,7 @@
 }
 
 .tabs a[aria-current="page"] {
-  background: var(--berry);
+  background: var(--pine);
   color: #fff;
 }
 
@@ -345,7 +345,7 @@
   height: 1.5rem;
   padding: 0 0.4rem;
   border-radius: 999px;
-  background: var(--sun);
+  background: var(--gold);
   color: var(--ink);
   font-size: var(--t-xs);
   font-weight: 700;
@@ -403,7 +403,7 @@
 }
 
 .kind_improvement {
-  border-left-color: var(--sun);
+  border-left-color: var(--gold);
 }
 
 .kind_compliment {
@@ -444,8 +444,8 @@
 }
 
 .fbStatus_new {
-  color: var(--berry);
-  background: var(--berry-soft);
+  color: var(--pine);
+  background: var(--pine-soft);
 }
 
 .fbStatus_in_progress {

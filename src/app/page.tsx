@@ -12,9 +12,6 @@ import { StaffCard } from "@/components/StaffCard";
 import { VisitBlock } from "@/components/VisitBlock";
 import styles from "./home.module.css";
 
-/** The category that covers barber work (cuts, line-ups, edge-ups) gets the barber-pole accent. */
-const BARBER_CATEGORY = "cuts";
-
 export default async function HomePage() {
   // "Open now" depends on the current time, so render per request.
   await connection();
@@ -29,20 +26,18 @@ export default async function HomePage() {
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={`wrap ${styles.heroGrid}`}>
           <div className={styles.heroText}>
-            <p className={styles.heroKicker}>
-              <Icon name="sparkle" size={20} /> Hair &amp; beauty in Centurion
-            </p>
+            <p className="kicker">Family hair &amp; beauty · Centurion</p>
             <h1 id="hero-title" className={styles.heroTitle}>
-              {business.headline.map((line) => (
-                <span key={line}>{line}</span>
-              ))}
+              {business.headline.map((line, i) =>
+                i === business.headline.length - 1 ? <em key={line}>{line}</em> : <span key={line}>{line}</span>,
+              )}
             </h1>
             <p className={styles.lede}>{business.intro}</p>
             <div className={styles.heroActions}>
               <Link href="/book" className="btn btn-primary">
                 Book an appointment <Icon name="arrow" size={18} />
               </Link>
-              <a href={telLink(business.contact.phone)} className="btn btn-sun">
+              <a href={telLink(business.contact.phone)} className="btn btn-gold">
                 <Icon name="phone" size={18} /> Call {business.contact.phone}
               </a>
             </div>
@@ -61,7 +56,7 @@ export default async function HomePage() {
               ratio="4 / 5"
               tint={1}
               priority
-              sizes="(min-width: 60rem) 30rem, 90vw"
+              sizes="(min-width: 60rem) 28rem, 90vw"
               placeholderLabel="Salon photo coming soon"
             />
             <Link href="/team" className={`glass ${styles.pickCard}`}>
@@ -109,16 +104,13 @@ export default async function HomePage() {
           <ul className={styles.services}>
             {business.categories.map((c) => (
               <li key={c.id} className={`card snip-card ${styles.service}`}>
+                {c.photo ? (
+                  <PhotoFrame photo={c.photo} ratio="4 / 3" tint={2} sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 92vw" className={styles.serviceImg} />
+                ) : null}
                 <div className={styles.serviceTop}>
-                  <span className={styles.serviceMark}>
-                    <span className={styles.serviceIcon}>
-                      <Icon name={c.icon} size={26} />
-                    </span>
-                    {c.id === BARBER_CATEGORY && <span className="barber-pole" aria-hidden="true" />}
-                  </span>
+                  <h3 className="snip-title">{c.name}</h3>
                   {c.fromZar !== null && <span className="price-tag">From {formatZar(c.fromZar)}</span>}
                 </div>
-                <h3 className="snip-title">{c.name}</h3>
                 <p className="muted">{c.blurb}</p>
                 <ul className="chips" aria-label={`${c.name} includes`}>
                   {servicesIn(c.id).map((s) => (
@@ -162,25 +154,39 @@ export default async function HomePage() {
       <section className="section" aria-labelledby="about-title">
         <div className={`wrap ${styles.about}`}>
           <div className={styles.aboutText}>
-            <p className="kicker">Professional care. Playful spirit.</p>
+            <p className="kicker">Inside the salon</p>
             <h2 id="about-title">A salon made for families</h2>
             {business.about.map((p) => (
               <p key={p.slice(0, 20)}>{p}</p>
             ))}
+            <ol className={styles.highlights}>
+              {business.highlights.map((h, i) => (
+                <li key={h.title}>
+                  <span className={styles.hlNum} aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3>{h.title}</h3>
+                    <p className="muted">{h.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
-          <ul className={styles.highlights}>
-            {business.highlights.map((h) => (
-              <li key={h.title} className="glass">
-                <span className={styles.hlIcon}>
-                  <Icon name={h.icon} size={26} />
-                </span>
-                <div>
-                  <h3>{h.title}</h3>
-                  <p className="muted">{h.body}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          {business.spacePhotos.length > 0 && (
+            <div className={styles.space}>
+              {business.spacePhotos.slice(0, 2).map((p, i) => (
+                <PhotoFrame
+                  key={p.src}
+                  photo={p}
+                  shape={i === 0 ? "arch" : "rounded"}
+                  ratio="4 / 5"
+                  sizes="(min-width: 56rem) 18rem, 45vw"
+                  className={styles[`space${i + 1}` as "space1"]}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -189,9 +195,10 @@ export default async function HomePage() {
         <div className="wrap">
           <div className={`section-head ${styles.headRow}`}>
             <div>
+              <p className="kicker">Gallery</p>
               <h2 id="gallery-title">Happy hair days</h2>
               <p>
-                A peek at the work that comes out of our chairs.
+                The space, and the styles we do.
                 {business.contact.instagram && <> Tag @{business.contact.instagram} to be featured.</>}
               </p>
             </div>

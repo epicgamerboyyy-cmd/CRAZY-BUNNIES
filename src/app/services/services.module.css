@@ -10,8 +10,8 @@
 
 .head h1 {
   font-size: var(--t-hero);
-  color: var(--berry);
-  font-weight: 520;
+  color: var(--pine);
+  font-weight: 440;
   letter-spacing: -0.035em;
 }
 
@@ -42,8 +42,8 @@
 }
 
 .jump a:hover {
-  border-color: var(--berry);
-  color: var(--berry);
+  border-color: var(--pine);
+  color: var(--pine);
 }
 
 .list {
@@ -58,6 +58,21 @@
   grid-template-columns: minmax(0, 1fr);
   gap: var(--s4);
   scroll-margin-top: calc(var(--header-h) + 1rem);
+}
+
+.catPhoto {
+  width: 4.5rem;
+}
+
+@media (min-width: 40rem) {
+  .catPhoto {
+    width: 6rem;
+  }
+}
+
+/* The sample tag is sized for big frames; keep it out of the small thumbnail */
+.catPhoto > span:last-child[title] {
+  display: none;
 }
 
 .catHead {

@@ -24,11 +24,13 @@ Everything business-specific is in **`src/config/business.ts`**. Contact details
 2. **Photos**:
    - Staff photos go in `public/team/` (portrait, roughly 4:5). Set `photo: "/team/name.jpg"`.
    - Hero and gallery photos go in `public/photos/`. Add each to `heroPhoto` or `gallery` with its width, height and a short description (`alt`) of what's in it.
-   - Next.js resizes and compresses them automatically. Use the salon's own photos only.
+   - Next.js resizes and compresses them automatically.
+   - Right now the hero, "Inside the salon" and some gallery shots are stills from the salon's walkthrough video (`public/photos/salon-*.jpg`). They're real but low resolution, so replace them after a proper photo shoot.
+   - Service cards, staff portraits and most gallery photos are **stock placeholders** from Unsplash, marked with a small "Sample" tag. Swap every `stock(...)` / `stockPortrait(...)` in `business.ts` for the salon's own photos before launch. Once none are left, the `images.unsplash.com` entry in `next.config.ts` can go.
 3. **Opening hours**: the old site called its hours a placeholder. Confirm them.
 4. **Durations**: booking slots are sized from each service's `durationMinutes`. These are estimates; get real times from the stylists.
 5. **WhatsApp and Facebook**: confirm the WhatsApp number and add the Facebook page URL.
-6. **Logo**: the bunny mark is a stand-in. Replace `BunnyMark` in `src/components/Icon.tsx` with the real logo file.
+6. **Logo**: the bunny mark is a stand-in. The salon's real mark (the line-art face with a halo, on the feature wall) should replace it. Replace `BunnyMark` in `src/components/Icon.tsx` with the real logo file.
 
 Then set `isSample: false` to remove the preview banner. Don't change a service or stylist `id` once real bookings exist.
 

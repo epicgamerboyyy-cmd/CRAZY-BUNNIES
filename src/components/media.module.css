@@ -2,6 +2,21 @@
   object-fit: cover;
 }
 
+.sampleTag {
+  position: absolute;
+  left: var(--s2);
+  bottom: var(--s2);
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  background: rgb(15 42 32 / 0.62);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
 /* Arch portrait, echoing the arched mirrors in the salon */
 .portrait {
   position: relative;
@@ -20,9 +35,9 @@
   place-items: center;
   padding-top: 12%;
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: clamp(1.1rem, 26cqi, 4rem);
-  color: var(--berry);
+  color: var(--pine);
 }
 
 .frame {
@@ -45,11 +60,11 @@
   justify-items: center;
   gap: var(--s2);
   padding: var(--s4);
-  color: var(--berry);
-  font-weight: 700;
+  color: var(--pine);
+  font-weight: 600;
   font-size: var(--t-sm);
   text-align: center;
-  background-image: radial-gradient(color-mix(in srgb, var(--berry) 14%, transparent) 1.2px, transparent 1.4px);
+  background-image: radial-gradient(color-mix(in srgb, var(--pine) 14%, transparent) 1.2px, transparent 1.4px);
   background-size: 16px 16px;
 }
 
@@ -82,7 +97,7 @@
 
 .staffName {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--t-md);
   line-height: 1.15;
 }

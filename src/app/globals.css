@@ -1,18 +1,19 @@
 /*
  * Crazy Bunnies design system.
- * Brand colours come from the salon's existing site (berry + mint), tuned so every
- * text pair passes WCAG AA. Arch frames echo the salon interior. Surfaces are solid
- * cards on cream, separated by hairline rules rather than blur and shadow.
+ * Colours are taken from the salon itself: mint walls, deep green, ivory slatted
+ * panels and the warm gold of the LED lighting. Every text pair passes WCAG AA.
+ * Arch frames echo the arched mirrors and shelving. Surfaces are solid cards on
+ * ivory, separated by hairline rules rather than blur and heavy shadow.
  */
 :root {
-  --cream: #fbf7f1;
-  --sand: #f4eadc;
-  --card: #fffdfa;
-  --ink: #2a1622;
-  --muted: #66545e;
-  --rule: #ebe0d6;
-  --control-border: #8f7d86;
-  --field: #fffdfa;
+  --cream: #f6f4ee;
+  --sand: #ebe7dc;
+  --card: #fdfcf9;
+  --ink: #0f2a20;
+  --muted: #4a5d54;
+  --rule: #dfdcd1;
+  --control-border: #7a8a82;
+  --field: #fdfcf9;
 
   /* Surface aliases (the old glass names, now solid so existing components keep working) */
   --glass: var(--card);
@@ -23,34 +24,39 @@
   /* Older names still used by the dashboard styles */
   --surface: var(--card);
   --paper: var(--cream);
-  --action: var(--berry);
-  --rule-strong: #d9c9cf;
+  --action: var(--pine);
+  --rule-strong: #c9d3cc;
 
-  --berry: #7a1d4b;
-  --berry-deep: #5c1338;
-  --berry-soft: #f7e6ee;
-  --blush: #f9dbe6;
-  --mint: #6cc5a6;
-  --mint-soft: #dff2ea;
-  --mint-ink: #1b6a50;
-  --sun: #f4b740;
+  /* Brand */
+  --pine: #124d3a;
+  --pine-deep: #0b3a2b;
+  --pine-soft: #e2efe8;
+  --sage: #d3e9de;
+  --mint: #95d5b8;
+  --mint-soft: #e3f3eb;
+  --mint-ink: #17644a;
+  --gold: #e0b04f;
+  --gold-deep: #cf9d3a;
+  --gold-ink: #7a5410;
+  --on-dark: #f6f4ee;
+  --on-dark-muted: #c4dbd0;
 
-  /* Portrait placeholder tints */
-  --tint-1: #f9dbe6;
-  --tint-2: #dff2ea;
-  --tint-3: #fbe7c2;
-  --tint-4: #e8def0;
+  /* Portrait / frame placeholder tints */
+  --tint-1: #d3e9de;
+  --tint-2: #e3f3eb;
+  --tint-3: #f1e6cc;
+  --tint-4: #e4e8df;
 
-  --ok: #1b6a50;
-  --ok-soft: #dff2ea;
+  --ok: #17644a;
+  --ok-soft: #e3f3eb;
   --warn: #8a5300;
   --warn-soft: #fbf0d9;
   --error: #b3261e;
   --error-soft: #fbe7e5;
-  --focus: #7a1d4b;
+  --focus: #124d3a;
 
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-manrope), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
+  --font-body: var(--font-hanken), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --t-xs: 0.8125rem;
   --t-sm: 0.9375rem;
@@ -73,7 +79,7 @@
   --radius: 8px;
   --radius-lg: 14px;
   --arch: 999px 999px var(--radius-lg) var(--radius-lg);
-  --shadow: none;
+  --shadow: 0 1px 2px rgb(15 42 32 / 0.04), 0 12px 32px -18px rgb(15 42 32 / 0.18);
 
   /* Motion */
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
@@ -120,7 +126,6 @@ body {
   line-height: 1.65;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "ss01", "cv11";
   overflow-wrap: break-word;
   display: flex;
   flex-direction: column;
@@ -142,10 +147,10 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 560;
+  font-weight: 460;
   font-optical-sizing: auto;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  line-height: 1.06;
+  letter-spacing: -0.022em;
   margin: 0;
   text-wrap: balance;
   hyphens: auto;
@@ -170,7 +175,7 @@ p {
 }
 
 a {
-  color: var(--berry);
+  color: var(--pine);
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
@@ -229,7 +234,7 @@ code {
   left: var(--s4);
   top: -100px;
   z-index: 100;
-  background: var(--berry);
+  background: var(--pine);
   color: #fff;
   padding: var(--s3) var(--s4);
   border-radius: var(--radius);
@@ -279,15 +284,21 @@ code {
   font-size: var(--t-md);
 }
 
+.section-head .kicker {
+  color: var(--mint-ink);
+  font-size: var(--t-xs);
+}
+
 .kicker {
   display: inline-flex;
   align-items: center;
   gap: var(--s3);
   justify-self: start;
   color: var(--mint-ink);
-  font-weight: 700;
-  font-size: var(--t-sm);
-  letter-spacing: 0.01em;
+  font-weight: 650;
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /* A short mint rule leads into the label instead of a pill */
@@ -328,12 +339,12 @@ code {
 }
 
 .btn-primary {
-  background: var(--berry);
+  background: var(--pine);
   color: #fff;
 }
 
 .btn-primary:hover {
-  background: var(--berry-deep);
+  background: var(--pine-deep);
 }
 
 .btn-mint {
@@ -342,16 +353,16 @@ code {
 }
 
 .btn-mint:hover {
-  background: #57b394;
+  background: #7cc6a5;
 }
 
-.btn-sun {
-  background: var(--sun);
+.btn-gold {
+  background: var(--gold);
   color: var(--ink);
 }
 
-.btn-sun:hover {
-  background: #e7a52b;
+.btn-gold:hover {
+  background: var(--gold-deep);
 }
 
 .btn-secondary {
@@ -365,7 +376,7 @@ code {
   color: var(--cream);
 }
 
-/* For use on berry backgrounds */
+/* For use on deep green backgrounds */
 .btn-light {
   background: transparent;
   border-color: var(--cream);
@@ -374,12 +385,12 @@ code {
 
 .btn-light:hover {
   background: var(--cream);
-  color: var(--berry);
+  color: var(--pine);
 }
 
 .btn-light:focus-visible,
 .btn-mint:focus-visible,
-.btn-sun:focus-visible {
+.btn-gold:focus-visible {
   outline-color: currentColor;
 }
 
@@ -434,8 +445,8 @@ code {
   display: inline-block;
   padding: 0.2rem 0.75rem;
   border-radius: var(--radius-sm);
-  background: var(--blush);
-  color: var(--berry);
+  background: var(--mint-soft);
+  color: var(--pine);
   font-weight: 700;
   font-size: var(--t-sm);
 }
@@ -578,7 +589,7 @@ svg[data-icon="arrow"] {
   transition-timing-function: var(--ease-out);
 }
 
-/* Barber pole: berry, cream and mint stripes in a capped tube */
+/* Barber pole: green, ivory and mint stripes in a capped tube */
 .barber-pole {
   display: block;
   flex: none;
@@ -591,11 +602,11 @@ svg[data-icon="arrow"] {
   /* Pattern repeats twice per tile along the 45deg line, so the tile wraps seamlessly */
   background-image: linear-gradient(
     45deg,
-    var(--berry) 0 12.5%,
+    var(--pine) 0 12.5%,
     var(--cream) 12.5% 25%,
     var(--mint) 25% 37.5%,
     var(--cream) 37.5% 50%,
-    var(--berry) 50% 62.5%,
+    var(--pine) 50% 62.5%,
     var(--cream) 62.5% 75%,
     var(--mint) 75% 87.5%,
     var(--cream) 87.5% 100%
@@ -616,7 +627,7 @@ svg[data-icon="arrow"] {
   bottom: 0;
   width: 3rem;
   height: 2px;
-  background: var(--berry);
+  background: var(--pine);
   transform: scaleX(0);
   transform-origin: left center;
 }

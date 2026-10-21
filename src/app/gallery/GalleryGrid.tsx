@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { Category, GalleryItem, IconName } from "@/config/business";
 import { Icon } from "@/components/Icon";
+import { SampleTag } from "@/components/PhotoFrame";
 import styles from "./gallery.module.css";
 
 interface Props {
@@ -83,6 +84,7 @@ export function GalleryGrid({ items, categories, staffNames }: Props) {
                 style={{ aspectRatio: `${g.width} / ${g.height}` }}
               >
                 <Image src={g.src} alt="" fill sizes="(min-width: 60rem) 24rem, 50vw" className={styles.cover} />
+                {g.sample && <SampleTag />}
               </button>
             </li>
           ))}
@@ -109,6 +111,7 @@ export function GalleryGrid({ items, categories, staffNames }: Props) {
             </div>
             <figcaption>
               {current.alt}
+              {current.sample && <span className={styles.by}> Sample photo</span>}
               {current.staffId && staffNames[current.staffId] && <span className={styles.by}> By {staffNames[current.staffId]}</span>}
               <span className={styles.count}>
                 {openIndex! + 1} of {shown.length}
