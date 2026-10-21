@@ -206,16 +206,16 @@ export const business = {
   ] as Service[],
   /** Sample team: stock portraits stand in until each person's real photo goes in /public/team. Replace with real names, roles, photos and the services each person does. */
   staff: [
-    { id: "stylist-1", name: "Stylist 1", role: "Braids specialist", categoryIds: ["braids", "kiddies", "treatments"], photo: stockPortrait("photo-1754844362137-88441eb7cc6f"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-1", name: "Stylist 1", role: "Braids specialist", categoryIds: ["braids", "kiddies", "treatments"], photo: stockPortrait("photo-1723922967349-d54aabf4084d"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
     { id: "stylist-2", name: "Stylist 2", role: "Braids specialist", categoryIds: ["braids", "kiddies"], photo: stockPortrait("photo-1764265150663-e58dcfc03252"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [] } },
     { id: "stylist-3", name: "Stylist 3", role: "Kids stylist", categoryIds: ["kiddies", "cuts", "treatments"], photo: stockPortrait("photo-1643956740911-62c19a5405f0"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
     { id: "stylist-4", name: "Stylist 4", role: "Stylist", categoryIds: ["braids", "cuts", "lashes"], photo: stockPortrait("photo-1613099084406-4b9140fc780a"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
     { id: "stylist-5", name: "Stylist 5", role: "Install specialist", categoryIds: ["lashes", "treatments"], serviceIds: ["wig-install", "extension-install", "install-styling", "deep-condition", "scalp-treatment", "steam-treatment"], photo: stockPortrait("photo-1531927557220-a9e23c1e4794"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { wed: [] } },
-    { id: "barber-1", name: "Barber 1", role: "Barber", categoryIds: ["cuts"], photo: stockPortrait("photo-1668752741330-8adc5cef7485"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "barber-1", name: "Barber 1", role: "Barber", categoryIds: ["cuts"], photo: stockPortrait("photo-1668752515680-075bf648d8fa"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
     { id: "nails-1", name: "Nail tech 1", role: "Nail technician", categoryIds: ["nails"], photo: stockPortrait("photo-1619718908820-5c1de14e0b7e"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
     { id: "nails-2", name: "Nail tech 2", role: "Nail technician", categoryIds: ["nails"], photo: stockPortrait("photo-1616166183781-0fdd2ef83374"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { thu: [] } },
-    { id: "makeup-1", name: "Makeup artist 1", role: "Makeup & lash artist", categoryIds: ["makeup", "lashes"], serviceIds: ["birthday-glam", "face-sparkle", "special-occasion", "lashes"], photo: stockPortrait("photo-1594465919760-441fe5908ab0"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "makeup-2", name: "Makeup artist 2", role: "Makeup artist", categoryIds: ["makeup"], photo: stockPortrait("photo-1681597108168-353c13e8e7a5"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [], wed: [] } },
+    { id: "makeup-1", name: "Makeup artist 1", role: "Makeup & lash artist", categoryIds: ["makeup", "lashes"], serviceIds: ["birthday-glam", "face-sparkle", "special-occasion", "lashes"], photo: stockPortrait("photo-1606416132922-22ab37c1231e"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "makeup-2", name: "Makeup artist 2", role: "Makeup artist", categoryIds: ["makeup"], photo: stockPortrait("photo-1668752741330-8adc5cef7485"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [], wed: [] } },
   ] as StaffMember[],
   /** Real salon stills plus stock samples. Replace the samples with the salon's own work. */
   gallery: [
@@ -229,7 +229,7 @@ export const business = {
     { ...stock("photo-1709477542149-f4e0e21d590b", "Makeup being applied with a brush", 960, 960), categoryId: "makeup" },
     { ...SALON.lounge, categoryId: "salon" },
     { ...stock("photo-1674049406467-824ea37c7184", "Eyelash extensions being applied", 960, 960), categoryId: "lashes" },
-    { ...stock("photo-1634315775834-3e1ac73de6b6", "Styled wigs ready for installation"), categoryId: "lashes" },
+    { ...stock("photo-1674049406179-d7bf2c263e71", "Brows being shaped by a beauty technician"), categoryId: "lashes" },
     { ...SALON.floor, categoryId: "salon" },
     { ...stock("photo-1481385694031-f2b14f8621d5", "Close-up of fresh braids", 960, 960), categoryId: "braids" },
     { ...stock("photo-1610992015762-45dca7fa3a85", "Soft pink manicure"), categoryId: "nails" },
