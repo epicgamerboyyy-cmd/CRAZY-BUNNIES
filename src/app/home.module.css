@@ -1,16 +1,13 @@
 /* Hero */
+/* Forest-green hero with the warm glow of the salon's LED strips */
 .hero {
-  padding-block: var(--s6) var(--s7);
-}
-
-/* A mint panel behind the photo on wide screens, like the salon's walls */
-@media (min-width: 60rem) {
-  .hero {
-    padding-block: var(--s7) var(--s8);
-    background:
-      linear-gradient(var(--mint-soft), var(--mint-soft)) right top / 34% 100% no-repeat,
-      var(--cream);
-  }
+  padding-block: var(--s7) var(--s8);
+  background:
+    radial-gradient(38rem 26rem at 80% 30%, rgb(233 185 90 / 0.16), transparent 70%),
+    radial-gradient(30rem 22rem at 0% 100%, rgb(163 220 194 / 0.12), transparent 70%),
+    var(--pine);
+  color: var(--on-dark);
+  overflow: hidden;
 }
 
 .heroGrid {
@@ -47,20 +44,20 @@
   font-weight: 420;
   line-height: 0.98;
   letter-spacing: -0.035em;
-  color: var(--ink);
+  color: var(--on-dark);
   display: grid;
 }
 
 .heroTitle em {
   font-style: italic;
   font-weight: 380;
-  color: var(--pine);
+  color: var(--mint);
 }
 
 .lede {
   font-size: var(--t-md);
   line-height: 1.55;
-  color: var(--muted);
+  color: var(--on-dark-muted);
   max-width: 34rem;
 }
 
@@ -76,34 +73,35 @@
   align-items: center;
   gap: var(--s2);
   font-weight: 700;
-  color: var(--muted);
+  color: var(--on-dark-muted);
   font-size: var(--t-sm);
 }
 
 .statusLine a {
-  color: var(--muted);
+  color: var(--on-dark-muted);
 }
 
 .dot {
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
-  background: var(--pine);
+  background: var(--caramel);
 }
 
 .isOpen {
-  color: var(--mint-ink);
+  color: var(--mint);
 }
 
 .isOpen .dot {
-  background: var(--mint-ink);
+  background: var(--mint);
+  box-shadow: 0 0 0 4px rgb(163 220 194 / 0.25);
 }
 
 .sep {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--control-border);
+  background: var(--on-dark-muted);
 }
 
 .heroArt {
@@ -112,6 +110,14 @@
   width: 100%;
   justify-self: center;
   padding-bottom: var(--s6);
+}
+
+/* A thin lit outline around the arch, like the gold LED around the salon's mirrors */
+.heroArt > span:first-child {
+  box-shadow:
+    0 0 0 6px var(--pine),
+    0 0 0 8px var(--glow),
+    0 0 48px 6px rgb(233 185 90 / 0.35);
 }
 
 .pickCard {
@@ -145,7 +151,7 @@
 }
 
 .pickCard > svg {
-  color: var(--pine);
+  color: var(--caramel-ink);
 }
 
 .pickSub {
@@ -179,7 +185,7 @@
 
 /* Strip of everything we do */
 .strip {
-  background: var(--pine);
+  background: var(--walnut);
 }
 
 .stripList {
@@ -206,7 +212,7 @@
 }
 
 .stripList a svg {
-  color: var(--mint);
+  color: var(--caramel);
 }
 
 .stripList a:hover {
@@ -286,7 +292,7 @@
 
 /* Team */
 .teamSection {
-  background: var(--sand);
+  background: var(--latte);
   border-block: 1px solid var(--glass-edge);
 }
 
@@ -343,7 +349,7 @@
   font-family: var(--font-display);
   font-style: italic;
   font-size: var(--t-md);
-  color: var(--mint-ink);
+  color: var(--caramel-ink);
   line-height: 1.3;
 }
 
@@ -371,8 +377,8 @@
 
 /* Gallery preview */
 .gallerySection {
-  background: var(--mint-soft);
-  border-block: 1px solid var(--glass-edge);
+  background: var(--pine);
+  border-block: 0;
 }
 
 .galleryGrid {
@@ -403,13 +409,13 @@
 .cta {
   margin-top: var(--s4);
   background:
-    radial-gradient(36rem 18rem at 90% 0%, rgb(224 176 79 / 0.16), transparent 70%),
-    radial-gradient(30rem 18rem at 0% 100%, rgb(149 213 184 / 0.22), transparent 70%),
-    var(--pine);
+    radial-gradient(36rem 18rem at 90% 0%, rgb(233 185 90 / 0.22), transparent 70%),
+    radial-gradient(30rem 18rem at 0% 100%, rgb(196 134 77 / 0.25), transparent 70%),
+    var(--walnut);
   color: var(--cream);
   padding-block: var(--s8);
   border-radius: 48px 48px 0 0;
-  /* Runs straight into the green footer */
+  /* Sits on top of the footer's top edge */
   margin-bottom: calc(var(--s8) * -1);
 }
 

@@ -210,7 +210,7 @@
 /* Footer */
 .footer {
   margin-top: var(--s8);
-  background: var(--pine);
+  background: var(--pine-deep);
   color: var(--cream);
   padding-block: var(--s7) var(--s5);
 }
@@ -290,7 +290,7 @@
 }
 
 .social a:hover {
-  background: var(--pine-deep);
+  background: var(--pine);
 }
 
 .copy {

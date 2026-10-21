@@ -1,19 +1,21 @@
 /*
  * Crazy Bunnies design system.
- * Colours are taken from the salon itself: mint walls, deep green, ivory slatted
- * panels and the warm gold of the LED lighting. Every text pair passes WCAG AA.
+ * Colours are taken from the salon itself: forest green and mint walls, walnut and
+ * oak wood, caramel cushions and the warm gold of the LED lighting. Every text pair
+ * passes WCAG AA.
  * Arch frames echo the arched mirrors and shelving. Surfaces are solid cards on
  * ivory, separated by hairline rules rather than blur and heavy shadow.
  */
 :root {
-  --cream: #f6f4ee;
-  --sand: #ebe7dc;
-  --card: #fdfcf9;
-  --ink: #0f2a20;
-  --muted: #4a5d54;
-  --rule: #dfdcd1;
-  --control-border: #7a8a82;
-  --field: #fdfcf9;
+  --cream: #f8f3ec;
+  --sand: #efe6da;
+  --latte: #f2e6d6;
+  --card: #fffcf8;
+  --ink: #1d2a22;
+  --muted: #5f5246;
+  --rule: #e7dccd;
+  --control-border: #8a7a6a;
+  --field: #fffcf8;
 
   /* Surface aliases (the old glass names, now solid so existing components keep working) */
   --glass: var(--card);
@@ -25,35 +27,43 @@
   --surface: var(--card);
   --paper: var(--cream);
   --action: var(--pine);
-  --rule-strong: #c9d3cc;
+  --rule-strong: #d6c8b6;
 
-  /* Brand */
-  --pine: #124d3a;
-  --pine-deep: #0b3a2b;
-  --pine-soft: #e2efe8;
-  --sage: #d3e9de;
-  --mint: #95d5b8;
-  --mint-soft: #e3f3eb;
-  --mint-ink: #17644a;
-  --gold: #e0b04f;
-  --gold-deep: #cf9d3a;
-  --gold-ink: #7a5410;
-  --on-dark: #f6f4ee;
-  --on-dark-muted: #c4dbd0;
+  /* Brand: forest green and walnut brown, with mint and caramel accents */
+  --pine: #173f30;
+  --pine-deep: #0f2c21;
+  --pine-soft: #e3efe7;
+  --sage: #d5e8dc;
+  --mint: #a3dcc2;
+  --mint-soft: #e3f2ea;
+  --mint-ink: #1f6a4f;
+  --walnut: #5a3925;
+  --walnut-deep: #3f271a;
+  --caramel: #c4864d;
+  --caramel-deep: #ad7039;
+  --caramel-soft: #f3e3cf;
+  --caramel-ink: #8a5426;
+  /* "gold" buttons are caramel now; the real gold is kept for the lit-arch glow */
+  --gold: var(--caramel);
+  --gold-deep: var(--caramel-deep);
+  --gold-ink: var(--caramel-ink);
+  --glow: #e9b95a;
+  --on-dark: #f8f3ec;
+  --on-dark-muted: #c9dccf;
 
   /* Portrait / frame placeholder tints */
-  --tint-1: #d3e9de;
-  --tint-2: #e3f3eb;
-  --tint-3: #f1e6cc;
-  --tint-4: #e4e8df;
+  --tint-1: #e3efe7;
+  --tint-2: #f2e6d6;
+  --tint-3: #e9dccb;
+  --tint-4: #dfeadf;
 
-  --ok: #17644a;
-  --ok-soft: #e3f3eb;
+  --ok: #1f6a4f;
+  --ok-soft: #e3f2ea;
   --warn: #8a5300;
   --warn-soft: #fbf0d9;
   --error: #b3261e;
   --error-soft: #fbe7e5;
-  --focus: #124d3a;
+  --focus: #173f30;
 
   --font-display: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
   --font-body: var(--font-hanken), system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -376,6 +386,39 @@ code {
   color: var(--cream);
 }
 
+.btn-caramel {
+  background: var(--caramel);
+  color: var(--pine-deep);
+}
+
+.btn-caramel:hover {
+  background: #d2955c;
+}
+
+/* Dark sections: forest or walnut backgrounds */
+.on-dark {
+  color: var(--on-dark);
+}
+
+.on-dark .kicker,
+.on-dark .section-head .kicker {
+  color: var(--mint);
+}
+
+.on-dark .section-head p,
+.on-dark .muted {
+  color: var(--on-dark-muted);
+}
+
+/* Plain text links only; cards keep their own dark-on-light text */
+.on-dark a:not(.btn):not(.card):not(.glass) {
+  color: var(--on-dark);
+}
+
+.on-dark :focus-visible {
+  outline-color: var(--glow);
+}
+
 /* For use on deep green backgrounds */
 .btn-light {
   background: transparent;
@@ -390,6 +433,7 @@ code {
 
 .btn-light:focus-visible,
 .btn-mint:focus-visible,
+.btn-caramel:focus-visible,
 .btn-gold:focus-visible {
   outline-color: currentColor;
 }
@@ -435,7 +479,7 @@ code {
   display: inline-block;
   padding: 0.2rem 0.7rem;
   border-radius: var(--radius-sm);
-  background: var(--sand);
+  background: var(--pine-soft);
   font-size: var(--t-xs);
   font-weight: 700;
   color: var(--ink);
@@ -445,8 +489,8 @@ code {
   display: inline-block;
   padding: 0.2rem 0.75rem;
   border-radius: var(--radius-sm);
-  background: var(--mint-soft);
-  color: var(--pine);
+  background: var(--caramel-soft);
+  color: var(--walnut);
   font-weight: 700;
   font-size: var(--t-sm);
 }

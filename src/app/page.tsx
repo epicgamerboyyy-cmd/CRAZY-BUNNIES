@@ -23,7 +23,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className={styles.hero} aria-labelledby="hero-title">
+      <section className={`on-dark ${styles.hero}`} aria-labelledby="hero-title">
         <div className={`wrap ${styles.heroGrid}`}>
           <div className={styles.heroText}>
             <p className="kicker">Family hair &amp; beauty · Centurion</p>
@@ -34,10 +34,10 @@ export default async function HomePage() {
             </h1>
             <p className={styles.lede}>{business.intro}</p>
             <div className={styles.heroActions}>
-              <Link href="/book" className="btn btn-primary">
+              <Link href="/book" className="btn btn-caramel">
                 Book an appointment <Icon name="arrow" size={18} />
               </Link>
-              <a href={telLink(business.contact.phone)} className="btn btn-gold">
+              <a href={telLink(business.contact.phone)} className="btn btn-light">
                 <Icon name="phone" size={18} /> Call {business.contact.phone}
               </a>
             </div>
@@ -191,7 +191,7 @@ export default async function HomePage() {
       </section>
 
       {/* Gallery preview */}
-      <section className={`section ${styles.gallerySection}`} aria-labelledby="gallery-title">
+      <section className={`section on-dark ${styles.gallerySection}`} aria-labelledby="gallery-title">
         <div className="wrap">
           <div className={`section-head ${styles.headRow}`}>
             <div>
@@ -202,7 +202,7 @@ export default async function HomePage() {
                 {business.contact.instagram && <> Tag @{business.contact.instagram} to be featured.</>}
               </p>
             </div>
-            <Link href="/gallery" className="btn btn-secondary btn-small">
+            <Link href="/gallery" className="btn btn-light btn-small">
               See the gallery
             </Link>
           </div>
@@ -221,7 +221,7 @@ export default async function HomePage() {
           </ul>
           {business.contact.instagram && (
             <p className={styles.insta}>
-              <a href={instagramUrl(business.contact.instagram)} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+              <a href={instagramUrl(business.contact.instagram)} className="btn btn-caramel" target="_blank" rel="noopener noreferrer">
                 <Icon name="instagram" size={18} /> Follow @{business.contact.instagram}
               </a>
             </p>
@@ -263,12 +263,12 @@ export default async function HomePage() {
       </section>
 
       {/* Closing call to action */}
-      <section className={styles.cta} aria-labelledby="cta-title">
+      <section className={`on-dark ${styles.cta}`} aria-labelledby="cta-title">
         <div className={`wrap ${styles.ctaInner}`}>
           <h2 id="cta-title">Ready for a fresh salon day?</h2>
           <p>Pick a time that suits you and the person you want. It takes about a minute.</p>
           <div className={styles.heroActions}>
-            <Link href="/book" className="btn btn-mint">
+            <Link href="/book" className="btn btn-caramel">
               Book an appointment <Icon name="arrow" size={18} />
             </Link>
             <a href={telLink(business.contact.phone)} className="btn btn-light">

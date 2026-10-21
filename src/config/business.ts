@@ -81,9 +81,12 @@ function stock(id: string, alt: string, width = 960, height = 1200, crop = "entr
   };
 }
 
-/** Stills from the salon's own walkthrough video. Real, but low resolution: swap for proper photos when there's a shoot. */
+/**
+ * Stills from the salon's own walkthrough video, AI-upscaled (Real-ESRGAN) and colour graded.
+ * Real, but still video frames: swap for proper photos when there's a shoot.
+ */
 function salon(name: string, alt: string): Photo {
-  return { src: `/photos/${name}.jpg`, alt, width: 464, height: 580 };
+  return { src: `/photos/${name}.jpg`, alt, width: 1160, height: 1450 };
 }
 
 /** Placeholder headshot, cropped around the face. */
