@@ -20,7 +20,7 @@ Next.js 16 (App Router), Postgres via Drizzle, deployed on Vercel.
 
 Everything business-specific is in **`src/config/business.ts`**. Contact details, address, services and starting prices come from the salon's previous site. Lines marked `CONFIRM` still need checking:
 
-1. **Team**: replace the 10 sample profiles with real names, roles, short bios, which services each person does, and the days they work.
+1. **Team**: replace the 14 sample profiles with real names, roles, short bios, which services each person does, and the days they work.
 2. **Photos**:
    - Staff photos go in `public/team/` (portrait, roughly 4:5). Set `photo: "/team/name.jpg"`.
    - Hero and gallery photos go in `public/photos/`. Add each to `heroPhoto` or `gallery` with its width, height and a short description (`alt`) of what's in it.
