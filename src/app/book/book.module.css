@@ -27,8 +27,8 @@
 
 .title {
   font-size: var(--t-xl);
-  font-weight: 520;
-  color: var(--berry);
+  font-weight: 440;
+  color: var(--pine);
 }
 
 .step {
@@ -71,7 +71,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 999px 999px 10px 10px;
-  background: var(--berry);
+  background: var(--pine);
   color: #fff;
   font-size: var(--t-base);
   flex: none;
@@ -142,7 +142,7 @@
   border: 0;
   padding: 0;
   min-height: 2.75rem;
-  color: var(--berry);
+  color: var(--pine);
   font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
@@ -174,8 +174,8 @@
 }
 
 .staffOption:has(input:checked) {
-  background: var(--berry-soft);
-  border-color: var(--berry);
+  background: var(--pine-soft);
+  border-color: var(--pine);
 }
 
 .staffOption:has(input:checked)::after {
@@ -186,7 +186,7 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background: var(--berry)
+  background: var(--pine)
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
     center / 60% no-repeat;
 }
@@ -274,7 +274,7 @@
 .groupPrice {
   font-family: var(--font-body);
   font-size: var(--t-sm);
-  color: var(--berry);
+  color: var(--pine);
   font-weight: 700;
 }
 
@@ -300,9 +300,9 @@
 }
 
 .serviceOption:has(input:checked) {
-  border-color: var(--berry);
-  background: var(--berry-soft);
-  box-shadow: inset 0 0 0 1px var(--berry);
+  border-color: var(--pine);
+  background: var(--pine-soft);
+  box-shadow: inset 0 0 0 1px var(--pine);
 }
 
 .serviceName {
@@ -356,7 +356,7 @@
 }
 
 .day:hover:not(:disabled) {
-  border-color: var(--berry);
+  border-color: var(--pine);
 }
 
 .day:disabled {
@@ -367,8 +367,8 @@
 }
 
 .day[aria-pressed="true"] {
-  background: var(--berry);
-  border-color: var(--berry);
+  background: var(--pine);
+  border-color: var(--pine);
   color: #fff;
 }
 

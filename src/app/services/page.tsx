@@ -5,6 +5,7 @@ import { telLink } from "@/lib/contact";
 import { formatZar } from "@/lib/money";
 import { formatDuration } from "@/lib/time";
 import { Icon } from "@/components/Icon";
+import { PhotoFrame } from "@/components/PhotoFrame";
 import { Portrait } from "@/components/Portrait";
 import styles from "./services.module.css";
 
@@ -46,10 +47,13 @@ export default function ServicesPage() {
             <section key={c.id} id={c.id} className={`card snip-card ${styles.category}`} aria-labelledby={`${c.id}-title`}>
               <header className={styles.catHead}>
                 <span className={styles.catMark}>
-                  <span className={styles.catIcon}>
-                    <Icon name={c.icon} size={30} />
-                  </span>
-                  {c.id === "cuts" && <span className="barber-pole" aria-hidden="true" />}
+                  {c.photo ? (
+                    <PhotoFrame photo={c.photo} shape="arch" ratio="4 / 5" tint={2} sizes="6rem" className={styles.catPhoto} />
+                  ) : (
+                    <span className={styles.catIcon}>
+                      <Icon name={c.icon} size={30} />
+                    </span>
+                  )}
                 </span>
                 <div className={styles.catText}>
                   <h2 id={`${c.id}-title`} className="snip-title">{c.name}</h2>

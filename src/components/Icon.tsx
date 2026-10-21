@@ -173,14 +173,14 @@ export function BunnyMark({ size = 40 }: { size?: number }) {
   return (
     <svg viewBox="0 0 40 40" width={size} height={size} aria-hidden="true" focusable="false">
       <rect width="40" height="40" rx="11" fill="var(--mint)" />
-      <g fill="none" stroke="var(--berry-deep)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke="var(--pine-deep)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M15.5 17c-2.3-4.5-2.4-9.5-.7-10.1 2-.6 3.5 4.8 3.5 9" />
         <path d="M24.5 17c2.3-4.5 2.4-9.5.7-10.1-2-.6-3.5 4.8-3.5 9" />
         <circle cx="20" cy="24.5" r="7.8" />
       </g>
-      <circle cx="17.3" cy="23.6" r="1.25" fill="var(--berry-deep)" />
-      <circle cx="22.7" cy="23.6" r="1.25" fill="var(--berry-deep)" />
-      <path d="M18.6 27.1c.8.6 2 .6 2.8 0" fill="none" stroke="var(--berry-deep)" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="17.3" cy="23.6" r="1.25" fill="var(--pine-deep)" />
+      <circle cx="22.7" cy="23.6" r="1.25" fill="var(--pine-deep)" />
+      <path d="M18.6 27.1c.8.6 2 .6 2.8 0" fill="none" stroke="var(--pine-deep)" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }

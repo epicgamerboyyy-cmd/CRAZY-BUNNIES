@@ -35,8 +35,8 @@
 }
 
 .closed {
-  background: var(--berry-soft);
-  color: var(--berry);
+  background: var(--pine-soft);
+  color: var(--pine);
 }
 
 .dot {
@@ -54,7 +54,7 @@
 }
 
 .row > svg {
-  color: var(--berry);
+  color: var(--pine);
   margin-top: 0.15rem;
 }
 
@@ -136,7 +136,7 @@
 }
 
 .closedText {
-  color: var(--berry);
+  color: var(--pine);
   font-weight: 700;
 }
 

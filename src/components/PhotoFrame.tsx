@@ -16,6 +16,15 @@ interface Props {
   className?: string;
 }
 
+/** Marks a stock placeholder so nobody mistakes it for the salon's own work. */
+export function SampleTag() {
+  return (
+    <span className={styles.sampleTag} title="Stock photo, to be replaced with the salon's own">
+      Sample
+    </span>
+  );
+}
+
 export function PhotoFrame({
   photo,
   sizes,
@@ -33,7 +42,10 @@ export function PhotoFrame({
       style={{ aspectRatio: ratio, background: `var(--tint-${tint})` }}
     >
       {photo ? (
-        <Image src={photo.src} alt={photo.alt} fill sizes={sizes} priority={priority} className={styles.cover} />
+        <>
+          <Image src={photo.src} alt={photo.alt} fill sizes={sizes} priority={priority} className={styles.cover} />
+          {photo.sample && <SampleTag />}
+        </>
       ) : (
         <span className={styles.empty}>
           <Icon name={placeholderIcon} size={36} />

@@ -26,6 +26,8 @@ export interface Category {
   blurb: string;
   /** "From" price in rand, as shown on the menu. null hides it. */
   fromZar: number | null;
+  /** Cover photo on the services cards. */
+  photo?: Photo;
 }
 
 export interface Service {
@@ -55,12 +57,52 @@ export interface StaffMember {
 }
 
 export interface Photo {
-  /** Path under /public */
+  /** Path under /public, or an images.unsplash.com URL for a stock placeholder */
   src: string;
   alt: string;
   width: number;
   height: number;
+  /** Stock placeholder, not the salon's own work. Shows a small "Sample" tag until replaced. */
+  sample?: boolean;
 }
+
+/**
+ * Stock placeholder from Unsplash (free for commercial use, no attribution needed).
+ * Cropped server-side to an exact size so width/height are known up front.
+ * Replace each one with the salon's own photo before launch.
+ */
+function stock(id: string, alt: string, width = 960, height = 1200, crop = "entropy"): Photo {
+  return {
+    src: `https://images.unsplash.com/${id}?auto=format&fit=crop&crop=${crop}&w=${width}&h=${height}&q=80`,
+    alt,
+    width,
+    height,
+    sample: true,
+  };
+}
+
+/**
+ * Stills from the salon's own walkthrough video, AI-upscaled (Real-ESRGAN) and colour graded.
+ * Real, but still video frames: swap for proper photos when there's a shoot.
+ */
+function salon(name: string, alt: string): Photo {
+  return { src: `/photos/${name}.jpg`, alt, width: 1160, height: 1450 };
+}
+
+/** Placeholder headshot, cropped around the face. */
+function stockPortrait(id: string): string {
+  return stock(id, "", 640, 800, "faces").src;
+}
+
+const SALON = {
+  mirrors: salon("salon-mirrors", "Styling stations with arched, gold-lit mirrors on a mint wall under a wavy LED-lit ceiling line"),
+  reception: salon("salon-reception", "Reception desk with the Crazy Bunnies Salon sign between two gold-lit arched shelves"),
+  floor: salon("salon-floor", "The long salon floor: a row of styling chairs and mirrors leading to the neon Crazy Bunnies sign"),
+  lounge: salon("salon-lounge", "Waiting bench with olive velvet seat and cushions beside a slatted, softly lit wall"),
+  logo: salon("salon-logo-wall", "The salon's glowing line-art logo on a slatted feature wall"),
+  station: salon("salon-station", "A styling station with an arched mirror, mint shelving and a hairdryer ready"),
+  wallpaper: salon("salon-wallpaper", "Botanical leaf wallpaper on the treatment room door"),
+};
 
 export interface GalleryItem extends Photo {
   categoryId: string;
@@ -124,16 +166,18 @@ export const business = {
     maxDaysAhead: 45,
     cancelCutoffMinutes: 12 * 60,
   },
-  /** Shown big on the homepage. Add a real salon photo here (e.g. the reception or a happy client). */
-  heroPhoto: null as Photo | null,
+  /** Shown big on the homepage. */
+  heroPhoto: SALON.mirrors as Photo | null,
+  /** Photos of the space itself, shown in the About section. */
+  spacePhotos: [SALON.reception, SALON.floor] as Photo[],
   categories: [
-    { id: "braids", name: "Plaiting & braids", icon: "braids", blurb: "Neat protective styles, modern braids and polished finishes for every age.", fromZar: 150 },
-    { id: "cuts", name: "Haircuts", icon: "scissors", blurb: "Fresh cuts, trims and styling for children, women and men.", fromZar: 60 },
-    { id: "kiddies", name: "Kiddies styles", icon: "bunny", blurb: "Fun, cute styles and packages designed for our littlest clients.", fromZar: 90 },
-    { id: "nails", name: "Nails", icon: "nails", blurb: "Classic colour and playful nail art for kids and adults.", fromZar: 50 },
-    { id: "makeup", name: "Makeup", icon: "makeup", blurb: "Polished makeup for birthdays, events and special days.", fromZar: 80 },
-    { id: "lashes", name: "Lashes & installs", icon: "lashes", blurb: "Careful lash, wig and extension installations tailored to you.", fromZar: 120 },
-    { id: "treatments", name: "Organic treatments", icon: "leaf", blurb: "Hair treatments using our own Bunnies organic products.", fromZar: 100 },
+    { id: "braids", name: "Plaiting & braids", icon: "braids", blurb: "Neat protective styles, modern braids and polished finishes for every age.", fromZar: 150, photo: stock("photo-1572955304332-bf714bd49add", "Woman with long braids in a patterned blouse", 960, 720) },
+    { id: "cuts", name: "Haircuts", icon: "scissors", blurb: "Fresh cuts, trims and styling for children, women and men.", fromZar: 60, photo: stock("photo-1704072650662-76df3af134a7", "A young boy getting a haircut in a barber chair", 960, 720) },
+    { id: "kiddies", name: "Kiddies styles", icon: "bunny", blurb: "Fun, cute styles and packages designed for our littlest clients.", fromZar: 90, photo: stock("photo-1646793328429-dfe89bef8604", "A little girl with two neat braids", 960, 720) },
+    { id: "nails", name: "Nails", icon: "nails", blurb: "Classic colour and playful nail art for kids and adults.", fromZar: 50, photo: stock("photo-1632345031435-8727f6897d53", "Client having her nails done at a nail station", 960, 720) },
+    { id: "makeup", name: "Makeup", icon: "makeup", blurb: "Polished makeup for birthdays, events and special days.", fromZar: 80, photo: stock("photo-1773688189414-7637b9b138e1", "Makeup artist applying blush to a client", 960, 720) },
+    { id: "lashes", name: "Lashes & installs", icon: "lashes", blurb: "Careful lash, wig and extension installations tailored to you.", fromZar: 120, photo: stock("photo-1589710751893-f9a6770ad71b", "Technician applying eyelash extensions with tweezers", 960, 720) },
+    { id: "treatments", name: "Organic treatments", icon: "leaf", blurb: "Hair treatments using our own Bunnies organic products.", fromZar: 100, photo: stock("photo-1695527081848-1e46c06e6458", "Client having her hair done in a salon chair", 960, 720) },
   ] as Category[],
   services: [
     { id: "cornrows", categoryId: "braids", name: "Cornrows", durationMinutes: 90, priceZar: null },
@@ -163,22 +207,42 @@ export const business = {
     { id: "scalp-treatment", categoryId: "treatments", name: "Scalp treatment", durationMinutes: 30, priceZar: null },
     { id: "steam-treatment", categoryId: "treatments", name: "Steam treatment", durationMinutes: 45, priceZar: null },
   ] as Service[],
-  /** Sample team: replace with real names, roles, photos and the services each person does. */
+  /** Sample team: stock portraits stand in until each person's real photo goes in /public/team. Replace with real names, roles, photos and the services each person does. */
   staff: [
-    { id: "stylist-1", name: "Stylist 1", role: "Braids specialist", categoryIds: ["braids", "kiddies", "treatments"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "stylist-2", name: "Stylist 2", role: "Braids specialist", categoryIds: ["braids", "kiddies"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [] } },
-    { id: "stylist-3", name: "Stylist 3", role: "Kids stylist", categoryIds: ["kiddies", "cuts", "treatments"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "stylist-4", name: "Stylist 4", role: "Stylist", categoryIds: ["braids", "cuts", "lashes"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "stylist-5", name: "Stylist 5", role: "Install specialist", categoryIds: ["lashes", "treatments"], serviceIds: ["wig-install", "extension-install", "install-styling", "deep-condition", "scalp-treatment", "steam-treatment"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { wed: [] } },
-    { id: "barber-1", name: "Barber 1", role: "Barber", categoryIds: ["cuts"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "nails-1", name: "Nail tech 1", role: "Nail technician", categoryIds: ["nails"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "nails-2", name: "Nail tech 2", role: "Nail technician", categoryIds: ["nails"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { thu: [] } },
-    { id: "makeup-1", name: "Makeup artist 1", role: "Makeup & lash artist", categoryIds: ["makeup", "lashes"], serviceIds: ["birthday-glam", "face-sparkle", "special-occasion", "lashes"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing." },
-    { id: "makeup-2", name: "Makeup artist 2", role: "Makeup artist", categoryIds: ["makeup"], photo: null, bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [], wed: [] } },
+    { id: "stylist-1", name: "Stylist 1", role: "Braids specialist", categoryIds: ["braids", "kiddies", "treatments"], photo: stockPortrait("photo-1723922967349-d54aabf4084d"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-2", name: "Stylist 2", role: "Braids specialist", categoryIds: ["braids", "kiddies"], photo: stockPortrait("photo-1764265150663-e58dcfc03252"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [] } },
+    { id: "stylist-3", name: "Stylist 3", role: "Kids stylist", categoryIds: ["kiddies", "cuts", "treatments"], photo: stockPortrait("photo-1643956740911-62c19a5405f0"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-4", name: "Stylist 4", role: "Stylist", categoryIds: ["braids", "cuts", "lashes"], photo: stockPortrait("photo-1613099084406-4b9140fc780a"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "stylist-5", name: "Stylist 5", role: "Install specialist", categoryIds: ["lashes", "treatments"], serviceIds: ["wig-install", "extension-install", "install-styling", "deep-condition", "scalp-treatment", "steam-treatment"], photo: stockPortrait("photo-1531927557220-a9e23c1e4794"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { wed: [] } },
+    { id: "barber-1", name: "Barber 1", role: "Barber", categoryIds: ["cuts"], photo: stockPortrait("photo-1668752515680-075bf648d8fa"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "nails-1", name: "Nail tech 1", role: "Nail technician", categoryIds: ["nails"], photo: stockPortrait("photo-1619718908820-5c1de14e0b7e"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "nails-2", name: "Nail tech 2", role: "Nail technician", categoryIds: ["nails"], photo: stockPortrait("photo-1616166183781-0fdd2ef83374"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { thu: [] } },
+    { id: "makeup-1", name: "Makeup artist 1", role: "Makeup & lash artist", categoryIds: ["makeup", "lashes"], serviceIds: ["birthday-glam", "face-sparkle", "special-occasion", "lashes"], photo: stockPortrait("photo-1606416132922-22ab37c1231e"), bio: "Sample profile. Add their name, photo and a line about what they love doing." },
+    { id: "makeup-2", name: "Makeup artist 2", role: "Makeup artist", categoryIds: ["makeup"], photo: stockPortrait("photo-1668752741330-8adc5cef7485"), bio: "Sample profile. Add their name, photo and a line about what they love doing.", hours: { tue: [], wed: [] } },
   ] as StaffMember[],
-  /** Add real photos of the salon's work. Until then the gallery shows empty frames. */
-  gallery: [] as GalleryItem[],
+  /** Real salon stills plus stock samples. Replace the samples with the salon's own work. */
+  gallery: [
+    { ...SALON.mirrors, categoryId: "salon" },
+    { ...stock("photo-1774773132862-8434afac1738", "Braids finished with colourful beads"), categoryId: "braids" },
+    { ...stock("photo-1607779097040-26e80aa78e66", "Mauve, white and silver glitter nails", 960, 960), categoryId: "nails" },
+    { ...stock("photo-1703792685152-d13e206924d8", "Barber cutting a young boy's hair", 960, 960), categoryId: "cuts" },
+    { ...SALON.reception, categoryId: "salon" },
+    { ...stock("photo-1586226201624-2d7f3101598b", "Girl with a pink and green hair clip", 960, 960), categoryId: "kiddies" },
+    { ...stock("photo-1673470907547-1c0c6a996095", "Neat cornrows"), categoryId: "braids" },
+    { ...stock("photo-1709477542149-f4e0e21d590b", "Makeup being applied with a brush", 960, 960), categoryId: "makeup" },
+    { ...SALON.lounge, categoryId: "salon" },
+    { ...stock("photo-1674049406467-824ea37c7184", "Eyelash extensions being applied", 960, 960), categoryId: "lashes" },
+    { ...stock("photo-1674049406179-d7bf2c263e71", "Brows being shaped by a beauty technician"), categoryId: "lashes" },
+    { ...SALON.floor, categoryId: "salon" },
+    { ...stock("photo-1481385694031-f2b14f8621d5", "Close-up of fresh braids", 960, 960), categoryId: "braids" },
+    { ...stock("photo-1610992015762-45dca7fa3a85", "Soft pink manicure"), categoryId: "nails" },
+    { ...SALON.logo, categoryId: "salon" },
+    { ...SALON.station, categoryId: "salon" },
+  ] as GalleryItem[],
 };
+
+/** Gallery-only filter for photos of the space itself. */
+export const SALON_CATEGORY: Category = { id: "salon", name: "The salon", icon: "leaf", blurb: "", fromZar: null };
 
 export type BusinessConfig = typeof business;
 

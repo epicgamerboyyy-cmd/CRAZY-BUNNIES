@@ -8,18 +8,21 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 
-const fraunces = localFont({
-  // Optical-size axis: big headlines automatically get the finer display cut.
-  src: "../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2",
-  variable: "--font-fraunces",
-  weight: "100 900",
+// Newsreader for headings: its optical-size axis gives big headlines the finer display cut.
+const newsreader = localFont({
+  src: [
+    { path: "../../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2", style: "normal" },
+    { path: "../../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-opsz-italic.woff2", style: "italic" },
+  ],
+  variable: "--font-newsreader",
+  weight: "200 800",
   display: "swap",
 });
 
-const manrope = localFont({
-  src: "../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2",
-  variable: "--font-manrope",
-  weight: "200 800",
+const hanken = localFont({
+  src: "../../node_modules/@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2",
+  variable: "--font-hanken",
+  weight: "100 900",
   display: "swap",
 });
 
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-export const viewport: Viewport = { themeColor: "#fbf7f1" };
+export const viewport: Viewport = { themeColor: "#f6f4ee" };
 
 // Only facts the salon has published. Hours are left out until they're confirmed.
 const jsonLd = {
@@ -55,7 +58,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-ZA" className={`${fraunces.variable} ${manrope.variable}`}>
+    <html lang="en-ZA" className={`${newsreader.variable} ${hanken.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

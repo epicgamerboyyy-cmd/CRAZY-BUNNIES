@@ -14,9 +14,9 @@
 
 .head h1 {
   font-size: var(--t-hero);
-  font-weight: 520;
+  font-weight: 440;
   letter-spacing: -0.035em;
-  color: var(--berry);
+  color: var(--pine);
 }
 
 .lede {
@@ -109,9 +109,9 @@
 }
 
 .kind:has(input:checked) {
-  border-color: var(--berry);
-  background: var(--berry-soft);
-  box-shadow: inset 0 0 0 1px var(--berry);
+  border-color: var(--pine);
+  background: var(--pine-soft);
+  box-shadow: inset 0 0 0 1px var(--pine);
 }
 
 .kind:has(input:focus-visible) {
@@ -133,7 +133,7 @@
 }
 
 .kindIcon[data-kind="improvement"] {
-  background: #fbefd3;
+  background: var(--tint-3);
   color: var(--warn);
 }
 
@@ -194,7 +194,7 @@
 .check input {
   width: 1.25rem;
   height: 1.25rem;
-  accent-color: var(--berry);
+  accent-color: var(--pine);
 }
 
 .small {
@@ -241,7 +241,7 @@
 
 .ref {
   font-family: var(--font-display);
-  color: var(--berry);
+  color: var(--pine);
   letter-spacing: 0.04em;
 }
 

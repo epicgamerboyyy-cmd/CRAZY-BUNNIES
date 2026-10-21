@@ -1,6 +1,13 @@
 /* Hero */
+/* Forest-green hero with the warm glow of the salon's LED strips */
 .hero {
-  padding-block: var(--s6) var(--s7);
+  padding-block: var(--s7) var(--s8);
+  background:
+    radial-gradient(38rem 26rem at 80% 30%, rgb(233 185 90 / 0.16), transparent 70%),
+    radial-gradient(30rem 22rem at 0% 100%, rgb(163 220 194 / 0.12), transparent 70%),
+    var(--pine);
+  color: var(--on-dark);
+  overflow: hidden;
 }
 
 .heroGrid {
@@ -34,16 +41,24 @@
 
 .heroTitle {
   font-size: var(--t-hero);
-  font-weight: 520;
-  line-height: 1;
+  font-weight: 420;
+  line-height: 0.98;
   letter-spacing: -0.035em;
-  color: var(--berry);
+  color: var(--on-dark);
   display: grid;
+}
+
+.heroTitle em {
+  font-style: italic;
+  font-weight: 380;
+  color: var(--mint);
 }
 
 .lede {
   font-size: var(--t-md);
-  max-width: 36rem;
+  line-height: 1.55;
+  color: var(--on-dark-muted);
+  max-width: 34rem;
 }
 
 .heroActions {
@@ -58,42 +73,51 @@
   align-items: center;
   gap: var(--s2);
   font-weight: 700;
-  color: var(--muted);
+  color: var(--on-dark-muted);
   font-size: var(--t-sm);
 }
 
 .statusLine a {
-  color: var(--muted);
+  color: var(--on-dark-muted);
 }
 
 .dot {
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
-  background: var(--berry);
+  background: var(--caramel);
 }
 
 .isOpen {
-  color: var(--mint-ink);
+  color: var(--mint);
 }
 
 .isOpen .dot {
-  background: var(--mint-ink);
+  background: var(--mint);
+  box-shadow: 0 0 0 4px rgb(163 220 194 / 0.25);
 }
 
 .sep {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--control-border);
+  background: var(--on-dark-muted);
 }
 
 .heroArt {
   position: relative;
-  max-width: 30rem;
+  max-width: 28rem;
   width: 100%;
   justify-self: center;
   padding-bottom: var(--s6);
+}
+
+/* A thin lit outline around the arch, like the gold LED around the salon's mirrors */
+.heroArt > span:first-child {
+  box-shadow:
+    0 0 0 6px var(--pine),
+    0 0 0 8px var(--glow),
+    0 0 48px 6px rgb(233 185 90 / 0.35);
 }
 
 .pickCard {
@@ -108,6 +132,7 @@
   padding: var(--s3) var(--s4);
   color: var(--ink);
   text-decoration: none;
+  box-shadow: var(--shadow);
 }
 
 @media (min-width: 60rem) {
@@ -126,7 +151,7 @@
 }
 
 .pickCard > svg {
-  color: var(--berry);
+  color: var(--caramel-ink);
 }
 
 .pickSub {
@@ -160,7 +185,7 @@
 
 /* Strip of everything we do */
 .strip {
-  background: var(--mint);
+  background: var(--walnut);
 }
 
 .stripList {
@@ -180,17 +205,22 @@
   min-height: 2.75rem;
   padding: 0 var(--s3);
   border-radius: var(--radius);
-  color: var(--ink);
-  font-weight: 700;
+  color: var(--on-dark);
+  font-weight: 600;
+  font-size: var(--t-sm);
   text-decoration: none;
 }
 
+.stripList a svg {
+  color: var(--caramel);
+}
+
 .stripList a:hover {
-  background: rgb(255 255 255 / 0.45);
+  background: rgb(255 255 255 / 0.1);
 }
 
 .stripList a:focus-visible {
-  outline-color: var(--ink);
+  outline-color: var(--gold);
 }
 
 /* Section header with an action on the right */
@@ -223,34 +253,32 @@
 }
 
 .service {
-  padding: var(--s5);
+  padding: var(--s3) var(--s3) var(--s5);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--s3);
   align-content: start;
 }
 
+.service > :not(.serviceImg) {
+  margin-inline: var(--s3);
+}
+
+.serviceImg {
+  border-radius: calc(var(--radius-lg) - 4px);
+  margin-bottom: var(--s2);
+}
+
 .serviceTop {
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  gap: var(--s3);
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s3);
 }
 
-.serviceMark {
-  display: flex;
-  align-items: center;
-  gap: var(--s3);
-}
-
-.serviceIcon {
-  display: grid;
-  place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  border-radius: 999px 999px 14px 14px;
-  background: var(--mint-soft);
-  color: var(--mint-ink);
+.serviceTop h3 {
+  font-size: var(--t-lg);
 }
 
 .serviceLink {
@@ -264,7 +292,7 @@
 
 /* Team */
 .teamSection {
-  background: var(--sand);
+  background: var(--latte);
   border-block: 1px solid var(--glass-edge);
 }
 
@@ -299,37 +327,58 @@
 
 .highlights {
   list-style: none;
-  margin: 0;
+  margin: var(--s4) 0 0;
   padding: 0;
   display: grid;
-  gap: var(--s3);
+  border-top: 1px solid var(--rule);
 }
 
 .highlights li {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--s4);
-  padding: var(--s4);
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: var(--s3);
+  padding-block: var(--s4);
+  border-bottom: 1px solid var(--rule);
 }
 
 .highlights h3 {
   margin-bottom: var(--s1);
 }
 
-.hlIcon {
+.hlNum {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--t-md);
+  color: var(--caramel-ink);
+  line-height: 1.3;
+}
+
+/* Photos of the space: an arch and an offset frame, like a pair of the salon's mirrors */
+.space {
   display: grid;
-  place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: var(--berry-soft);
-  color: var(--berry);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3);
+  align-items: start;
+  padding-bottom: var(--s6);
+}
+
+.space2 {
+  margin-top: var(--s6);
+}
+
+@media (min-width: 56rem) {
+  .space {
+    gap: var(--s4);
+  }
+  .space2 {
+    margin-top: var(--s8);
+  }
 }
 
 /* Gallery preview */
 .gallerySection {
-  background: var(--berry-soft);
-  border-block: 1px solid var(--glass-edge);
+  background: var(--pine);
+  border-block: 0;
 }
 
 .galleryGrid {
@@ -360,13 +409,13 @@
 .cta {
   margin-top: var(--s4);
   background:
-    radial-gradient(40rem 20rem at 85% 0%, rgb(255 143 176 / 0.35), transparent 70%),
-    radial-gradient(30rem 18rem at 0% 100%, rgb(108 197 166 / 0.3), transparent 70%),
-    var(--berry);
+    radial-gradient(36rem 18rem at 90% 0%, rgb(233 185 90 / 0.22), transparent 70%),
+    radial-gradient(30rem 18rem at 0% 100%, rgb(196 134 77 / 0.25), transparent 70%),
+    var(--walnut);
   color: var(--cream);
   padding-block: var(--s8);
   border-radius: 48px 48px 0 0;
-  /* Runs straight into the berry footer */
+  /* Sits on top of the footer's top edge */
   margin-bottom: calc(var(--s8) * -1);
 }
 
@@ -382,7 +431,7 @@
 }
 
 .ctaInner p {
-  color: #f1dbe6;
+  color: var(--on-dark-muted);
   font-size: var(--t-md);
 }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { business } from "@/config/business";
+import { business, SALON_CATEGORY } from "@/config/business";
 import { instagramUrl } from "@/lib/contact";
 import { Icon } from "@/components/Icon";
 import { GalleryGrid } from "./GalleryGrid";
@@ -21,7 +21,7 @@ export default function GalleryPage() {
           <p className="kicker">Our work</p>
           <h1 id="page-title">Gallery</h1>
           <p className={styles.lede}>
-            A peek at the happy hair days we&apos;ve created.
+            Inside the salon, and a look at the styles we do.
             {instagram && <> Tag @{instagram} on Instagram to be featured.</>}
           </p>
         </div>
@@ -29,7 +29,7 @@ export default function GalleryPage() {
       <div className="wrap">
         <GalleryGrid
           items={business.gallery}
-          categories={business.categories}
+          categories={[SALON_CATEGORY, ...business.categories]}
           staffNames={Object.fromEntries(business.staff.map((s) => [s.id, s.name]))}
         />
         <aside className={`card ${styles.follow}`} aria-labelledby="follow-title">

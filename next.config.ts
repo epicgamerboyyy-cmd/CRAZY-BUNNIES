@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
   // PGlite ships a wasm build that shouldn't go through the bundler.
   serverExternalPackages: ["@electric-sql/pglite"],
   poweredByHeader: false,
+  images: {
+    // Stock placeholders until the salon's own photos replace them. Fetched and
+    // re-served by the image optimizer, so the page itself only loads from 'self'.
+    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com", pathname: "/photo-**" }],
+    formats: ["image/avif", "image/webp"],
+  },
   async headers() {
     return [
       {
